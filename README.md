@@ -11,7 +11,7 @@
 
 **An educational, interactive Web3 exploit and defense laboratory simulating the mechanics of historic blockchain vulnerabilities.**
 
-[🌐 Live Demo](https://madhura2137.github.io/Blockchain-Attacks/) • [⚡ Features](#-key-features) • [🎯 Simulation Modules](#-the-three-historic-simulation-modules) • [🔬 EVM Architecture](#-under-the-hood-evm-architecture) • [🚀 Quick Start](#-quick-start--how-to-run) • [🎤 Viva Q&A](#-frequently-asked-viva-questions)
+[🌐 Live Demo](https://madhura2137.github.io/Blockchain-Attacks/) • [⚡ Features](#-key-features) • [🎯 Simulation Modules](#-the-six-interactive-simulation-modules) • [🔬 Architecture](#-under-the-hood-architecture) • [🚀 Quick Start](#-quick-start--how-to-run) • [🎤 Viva Q&A](#-frequently-asked-viva-questions)
 
 </div>
 
@@ -19,251 +19,138 @@
 
 ## 🌐 Live Demo
 
-You can interact with the live simulation directly in your web browser:  
+Interact with the live simulation directly in your web browser:  
 👉 **[Launch Blockchain Security Lab Online](https://madhura2137.github.io/Blockchain-Attacks/)**
 
-*(Zero installation, zero dependencies, runs 100% client-side in vanilla JavaScript)*
+*(Zero installation, zero dependencies, runs 100% offline and client-side in pure HTML5, CSS3, and Vanilla JavaScript)*
 
 ---
 
 ## 📖 Executive Summary
 
-Smart contracts deployed on public blockchains are **immutable** and govern billions of dollars in decentralized liquidity. Because "code is law", logical vulnerabilities in smart contract logic cannot simply be patched on-the-fly like traditional web applications. Once a contract is deployed, any vulnerability can be exploited irreversibly by external callers.
+Smart contracts and distributed ledgers govern hundreds of billions of dollars in decentralized liquidity. Because **code is law** and blockchain transactions are **immutable**, software bugs and game-theoretic design flaws cannot be silently patched on-the-fly like traditional web servers. Once deployed, any vulnerability can be irreversibly exploited by adversarial actors worldwide.
 
-This interactive lab visualizes and dissects three landmark security catastrophes in blockchain history:
+This interactive educational demonstrator provides safe, visual, offline simulations of 6 landmark security vulnerabilities and attacks in blockchain history:
 
-1. 🔴 **The DAO Reentrancy Attack (2016)** — $60M stolen (3.6M ETH), precipitating the historic Ethereum / Ethereum Classic chain fork.
-2. 🌉 **The Ronin Bridge Multi-Sig Compromise (March 2022)** — $625M exploit of Axie Infinity's cross-chain validator network via key harvesting and stale RPC signing permissions.
-3. 🔓 **Unprotected Initializer / Parity Multi-Sig Hack (2017)** — Missing access modifiers in initialization functions enabling arbitrary state usurping and freeze of hundreds of millions in Ether.
+1. ⛏️ **51% Consensus Majority Attack** — Mining pools seizing >50% hashrate to secretly outpace canonical chains and force massive chain reorganizations.
+2. 🎭 **Sybil Attack (Identity Forgery)** — A single adversary spinning up virtual sock-puppet nodes to overpower naive democratic peer voting.
+3. 🪙 **Double Spending (UTXO Race Attack)** — Exploiting zero-confirmation merchants by broadcasting conflicting transactions spending the same coin twice.
+4. 🔄 **The DAO Reentrancy Catastrophe (2016)** — $60M drained via recursive fallback execution before internal balances update, causing the Ethereum / Ethereum Classic hard fork.
+5. 🌉 **Ronin Bridge Multi-Sig Compromise ($625M - 2022)** — Harvesting private keys of 5 out of 9 validator nodes to authorize illicit cross-chain withdrawals.
+6. 🐛 **Smart Contract Bugs (Underflow & Access Control)** — Arithmetic underflow in pre-0.8 Solidity (`0 - 1 = 255`) and missing `onlyOwner` access modifiers allowing total contract takeover.
 
 ---
 
 ## ⚡ Key Features
 
-- 🎭 **Dual Interaction Modes**:
-  - **Visual Story Mode**: Intuitive high-level flow with animated balance bars, ETH coin particle transfers, audio effects, and step-by-step narrative.
-  - **Under-The-Hood EVM Mode**: Deep low-level mechanics showing real-time **Call Stack Depth**, **Memory Slots**, **Storage Modifications**, and **Gas Counters**.
-- 🔍 **Dual-Pane Solidity Code Inspector**:
-  - Side-by-side comparison of **Vulnerable Code** vs **Patched Code**.
-  - Synchronized line highlighting that follows each step of the exploit and defense execution.
-- 🎛️ **Full Playback Controls**:
-  - `Next Step (⚔️)`: Manually step through the exploit/defense cycle one state at a time.
-  - `Auto Play (▶)`: Automated continuous execution with customizable simulation speeds (1x, 1.5x, 2x).
-  - `Reset (🔄)`: Instant zero-state reset with full storage restoration.
+- 🧒 **ELI5 Everyday Metaphor Banners**:
+  - Each attack begins with an intuitive real-world analogy (e.g. *The 51-Student Bus Takeover*, *The Free Ice Cream Disguise Trick*, *The Glitched ATM*, *The Teleporting $100 Bill*).
+- 🔀 **Vulnerable vs. Patched Toggle**:
+  - Switch between vulnerable configurations and industry-standard mitigations (Checks-Effects-Interactions, Casper FFG Checkpoints, Proof-of-Stake, 6-Confirmation Rule, OpenZeppelin Ownable).
+- 🎛️ **Standardized Step-by-Step State Machines**:
+  - `Normal Action`: Observe valid, healthy consensus operations first.
+  - `Next Attack Step (Step X of Y)`: Step incrementally through each phase of an exploit.
+  - `Auto-Play Attack`: Hands-free automated playback with custom pacing for presentation delivery.
+  - `Reset Demo`: Instant return to initial baseline for audience Q&A.
+- 📟 **macOS-Style Live Terminal Logs**:
+  - Formatted narration console with red, yellow, and green status indicators explaining every state change in plain English.
+- 🎨 **Visual Architecture Canvases**:
+  - Competing blockchain visualizer showing orphaned blocks and the Longest Chain Rule.
+  - SVG dynamic puppet wires connecting sock-puppet nodes to a single adversary mastermind.
+  - Mechanical spinning odometer visualizer for integer underflows.
+  - Multi-sig 9-lock vault door graphic and live Quorum meter.
+  - Call Stack visualizer showing frame recursion depth during reentrancy.
 - 🔊 **Zero-Dependency Synthesizer Audio Engine**:
-  - Real-time audio tones generated using the **Web Audio API** (deposit chime, recursive reentrancy warning siren, transaction revert buzzer, and defense confirmation beep).
-- 🧩 **Interactive Knowledge Quizzes**:
-  - Built-in assessment quiz at the conclusion of each module to test understanding of root causes, EVM storage, and design patterns.
+  - Real-time audio tones synthesized natively using the **Web Audio API** (deposit chime, warning alarms, transaction sirens, and success chimes).
+- 📊 **Prevention Matrix & Classroom Quiz**:
+  - Comprehensive comparison matrix comparing Root Causes, Attack Vectors, Historic Losses, and Standard Mitigations across all 6 attacks.
+  - 6-question multiple choice quick quiz with real-time scoring and instant feedback.
+- 🎓 **Presenter Mode (`P`) & Speaker Notes Drawer (`S`)**:
+  - Built-in slide presentation banner and slide-out speaker notes drawer with talking points and analogies for classroom delivery.
 
 ---
 
-## 🎯 The Three Historic Simulation Modules
+## 🎯 The Six Interactive Simulation Modules
 
-```
+### 1. ⛏️ 51% Attack (Nakamoto Consensus Reorg)
+* **Everyday Metaphor**: The 51-Student Bus Takeover.
+* **Mechanism**: When an attacker controls >50% hashrate, they secretly mine a longer private fork while honest miners work publicly. When released, Nakamoto's Longest Chain Rule forces all nodes to abandon the honest chain (orphaning blocks) and erasing confirmed transactions.
+* **Defense**: Casper FFG finality checkpoints (blocks past 2 epochs cannot be reorganized) and massive economic proof-of-work scale.
+
+### 2. 🎭 Sybil Attack (Fake Digital Personas)
+* **Everyday Metaphor**: The Free Ice Cream Disguise Trick.
+* **Mechanism**: In a naive 1-IP-1-Vote system, an adversary spawns dozens of virtual socket identities for $0 to outvote honest peers and loot the DAO treasury.
+* **Defense**: Proof-of-Stake (voting power proportional to capital collateral, e.g. 32 ETH) and Proof-of-Work (computational cost), making identity forging economically meaningless.
+
+### 3. 🪙 Double Spending (Conflicting UTXO Race Attack)
+* **Everyday Metaphor**: The Teleporting $100 Bill.
+* **Mechanism**: Exploiting a 0-confirmation merchant. Alice buys a laptop from Bob and walks out with the product. Immediately, she broadcasts a conflicting transaction spending the same UTXO to Charlie with 5x higher gas fee. Rational miners mine Charlie's transaction, dropping Bob's payment.
+* **Defense**: 6-confirmation rule; merchants wait for block depth before releasing physical goods.
+
+### 4. 🔄 The DAO Reentrancy Attack ($60M Drained)
+* **Everyday Metaphor**: The Glitched ATM Loop.
+* **Mechanism**: The vulnerable `withdraw()` function executes external call `msg.sender.call.value()` *before* decrementing `balances[msg.sender]`. The attacker's fallback function catches the ether and calls `withdraw()` recursively before storage updates.
+* **Defense**: Checks-Effects-Interactions (CEI) pattern (update state *first*, transfer *second*) and OpenZeppelin `nonReentrant` mutex guards.
+
+### 5. 🌉 Ronin Bridge Multi-Sig Compromise ($625M)
+* **Everyday Metaphor**: The 9-Key Bank Vault Door.
+* **Mechanism**: Axie Infinity's cross-chain bridge required 5 out of 9 validator signatures to authorize withdrawals. Lazarus Group hacked Sky Mavis's internal network to harvest 4 keys, and leveraged a lingering authorization on an Axie DAO validator to obtain the critical 5th signature.
+* **Defense**: Expansion to 11-of-15 validator quorum, multi-institutional validator decentralization, and hardware timelocks.
+
+### 6. 🐛 Smart Contract Bugs: Underflow & Access Control
+* **Everyday Metaphor**: The Car Odometer Rolling Backwards & The Key Left in the Front Door.
+* **Mechanism**:
+  - *Integer Underflow*: In `uint8`, subtracting `0 - 1` wraps around to `255` (visualized by spinning odometer reels).
+  - *Missing Access Control*: Failing to attach the `onlyOwner` modifier to administrative functions (`changeOwner()`, `emergencyWithdrawAll()`) allows any external caller to seize total ownership.
+* **Defense**: Solidity 0.8+ default panic reverts on underflow/overflow, SafeMath, and OpenZeppelin `Ownable`.
+
+---
+
+## 🔬 Under-The-Hood Architecture
+
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                       BLOCKCHAIN SECURITY LAB MODULES                       │
-├─────────────────────────┬─────────────────────────┬─────────────────────────┤
-│   1. The DAO Hack       │   2. Ronin Bridge Hack  │   3. Parity Multi-Sig   │
-│   (Reentrancy)          │   (Validator Quorum)    │   (Unprotected Init)    │
-│                         │                         │                         │
-│  • Storage vs Transfer  │  • 5 of 9 PoA Scheme    │  • Constructor vs Func  │
-│  • Fallback function    │  • Key Harvesting       │  • Storage Hijacking    │
-│  • Recursive call stack │  • Stale RPC Whitelist  │  • Missing Modifiers    │
-│  • CEI & ReentrancyGuard│  • Timelocks & 9/11     │  • OpenZeppelin Init    │
-└─────────────────────────┴─────────────────────────┴─────────────────────────┘
+│                      BLOCKCHAIN SECURITY INTERACTIVE LAB                    │
+├──────────────────────────────────┬──────────────────────────────────────────┤
+│           FRONT-END              │              LOGIC ENGINE                │
+│  - Semantic HTML5 (9 Tabs)       │  - Simulation State Machines             │
+│  - CSS3 Glassmorphism UI         │  - Web Audio API Sound Synthesizer       │
+│  - SVG Puppet Wire Renderer      │  - Dynamic DOM Nodes & Block Visualizers │
+│  - Mechanical Odometer Reels     │  - Real-time Terminal Log Formatter      │
+│  - Multi-Sig Vault Door Graphic  │  - Presentation Controller (Shortcuts)   │
+└──────────────────────────────────┴──────────────────────────────────────────┘
 ```
-
----
-
-### Module 1: The DAO Reentrancy Attack (2016)
-
-#### 💥 The Vulnerability (Root Cause)
-In Solidity, sending Ether via `.call{value: amount}("")` hands execution control over to the recipient address. If the recipient is a contract, its `receive()` or `fallback()` function triggers immediately. 
-
-In The DAO's contract, the developer executed the external transfer **before** decrementing the user's recorded storage balance:
-
-```solidity
-// ❌ VULNERABLE: State mutated AFTER external call
-function withdraw() public {
-    uint256 amount = balances[msg.sender];
-    require(amount > 0);
-
-    // 1. Hands execution control to caller before zeroing balance!
-    (bool success, ) = msg.sender.call{value: amount}("");
-    require(success);
-
-    // 2. Storage effect never reached until entire call stack finishes
-    balances[msg.sender] = 0; 
-}
-```
-
-```
-[Attacker]                  [Vulnerable DAO]
-    │                               │
-    │─────── 1. withdraw() ────────>│ (checks balances[attacker] == 10 ETH)
-    │                               │
-    │<─── 2. ETH (10 ETH) ──────────│ (sends ETH via external call)
-    │     triggers receive()        │
-    │                               │
-    │─────── 3. withdraw() AGAIN ──>│ (balance STILL reads 10 ETH!)
-    │                               │
-    │<─── 4. ETH (10 ETH) ──────────│ (sends another 10 ETH!)
-    │     triggers receive()        │
-    │                               │
-    │─────── 5. withdraw() AGAIN ──>│ (repeats until DAO vault = 0 ETH)
-```
-
-#### 🛡️ The Defense (Checks-Effects-Interactions & Mutex Guard)
-1. **Checks-Effects-Interactions (CEI) Pattern**: Always update contract storage (`balances[msg.sender] = 0`) *prior* to initiating any external calls.
-2. **ReentrancyGuard**: Use a mutex status lock (`nonReentrant` modifier) that reverts if re-entered.
-
-```solidity
-// ✅ SECURE: Checks-Effects-Interactions + Mutex
-function withdraw() public nonReentrant {
-    // 1. Checks
-    uint256 amount = balances[msg.sender];
-    require(amount > 0, "Zero balance");
-
-    // 2. Effects (Storage updated FIRST!)
-    balances[msg.sender] = 0;
-
-    // 3. Interactions (External call executed LAST)
-    (bool success, ) = msg.sender.call{value: amount}("");
-    require(success, "Transfer failed");
-}
-```
-
----
-
-### Module 2: Ronin Network Cross-Chain Bridge Hack ($625M - March 2022)
-
-#### 💥 The Vulnerability (Root Cause)
-Axie Infinity's Ronin sidechain used a **Proof-of-Authority (PoA)** model with 9 validator nodes. Any deposit or withdrawal across the bridge to Ethereum required signatures from a quorum of at least **5 out of 9** validators.
-
-- **4 Nodes** were owned and hosted directly by Sky Mavis.
-- **1 Node** was run by the Axie DAO.
-- In November 2021, due to heavy user traffic, Axie DAO granted Sky Mavis permission to sign transactions on its behalf via an RPC endpoint whitelist. This permission was **never revoked**.
-- In March 2022, the Lazarus Group compromised a Sky Mavis engineer's machine via a spear-phishing fake job offer PDF, obtaining access to the 4 Sky Mavis private keys plus the Axie DAO RPC signing proxy—giving them the requisite 5/9 quorum to drain 173,600 ETH and 25.5M USDC.
-
-```
-[Sky Mavis Node 1] ──► [COMPROMISED] ──┐
-[Sky Mavis Node 2] ──► [COMPROMISED] ──┤
-[Sky Mavis Node 3] ──► [COMPROMISED] ──┼──► 5 / 9 Quorum Reached!
-[Sky Mavis Node 4] ──► [COMPROMISED] ──┤    Bridge Funds Unlocked ($625M)
-[Axie DAO Node 5 ] ──► [COMPROMISED] ──┘    (Stale Nov 2021 Whitelist)
-──────────────────────────────────────
-[Animoca Node 6  ] ──► [SECURE]
-[Binance Node 7  ] ──► [SECURE]
-[Delphi Node 8   ] ──► [SECURE]
-[Dialectic Node 9] ──► [SECURE]
-```
-
-#### 🛡️ The Defense (Multi-Tier Bridge Architecture)
-1. **Decentralized Quorum Increase**: Expand validator set to 11+ independent institutions, requiring 9 of 11 signatures (80%+ threshold).
-2. **Timelock Delays**: Transactions exceeding a threshold (e.g., $100,000) are placed into a mandatory 24-hour withdrawal queue.
-3. **Automated Anomaly Circuit Breaker**: Real-time heuristics freeze outgoing bridge contracts if volume exceeds historical statistical standard deviations.
-
----
-
-### Module 3: Parity Multi-Sig Unprotected Initializer (2017)
-
-#### 💥 The Vulnerability (Root Cause)
-To reduce deployment gas costs, Parity deployed a single master `WalletLibrary` containing all wallet logic, and lightweight user multi-sig proxy contracts forwarded calls to it via `delegatecall`.
-
-However, the initialization function inside the library was a standard `public` function lacking any check verifying whether initialization had already taken place:
-
-```solidity
-// ❌ VULNERABLE: No initializer check, no access modifier
-function initWallet(address[] _owners, uint _required, uint _daylimit) public {
-    // Anyone can call this at any time on the uninitialized library!
-    initDaylimit(_daylimit);
-    initMultiowned(_owners, _required);
-}
-```
-
-An external attacker invoked `initWallet([attackerAddress], 1, ...)` directly on the shared library, becoming its sole owner, and subsequently called `kill()` (`selfdestruct`), destroying the library and permanently freezing **513,774 ETH** across 587 multi-sig wallets.
-
-#### 🛡️ The Defense (OpenZeppelin Initializable Pattern)
-1. Use OpenZeppelin's `Initializable` contract standard.
-2. Guard the function with an `initializer` modifier enforcing that execution occurs strictly once:
-
-```solidity
-// ✅ SECURE: Guaranteed single-execution guard
-bool private _initialized;
-
-modifier initializer() {
-    require(!_initialized, "Contract instance has already been initialized");
-    _initialized = true;
-    _;
-}
-
-function initialize(address[] memory _owners, uint256 _required) public initializer {
-    // Safe initialization
-}
-```
-
----
-
-## 🔬 Under-The-Hood EVM Architecture
-
-The laboratory features a dedicated **EVM Forensics Engine** that exposes what actually happens inside the Ethereum Virtual Machine during attacks:
-
-```
-┌────────────────────────────────────────────────────────┐
-│                   EVM EXECUTION STATE                  │
-├──────────────────────────┬─────────────────────────────┤
-│      CALL STACK          │       STORAGE SLOTS         │
-│  [Depth 3] withdraw()    │  Slot 0: 0x0 (owner)        │
-│  [Depth 2] withdraw()    │  Slot 1: 0x000... (balance) │
-│  [Depth 1] withdraw()    │  Slot 2: 0x1 (mutex lock)   │
-├──────────────────────────┼─────────────────────────────┤
-│      MEMORY BUFFER       │       GAS METER             │
-│  0x00: 0x2e1a7d4d (hash) │  Gas Left: 2,841,200        │
-│  0x20: 0x000000000000000a│  Burnt Gas: 158,800         │
-└──────────────────────────┴─────────────────────────────┘
-```
-
-- **Call Stack Monitor**: Renders every frame pushed onto the EVM call stack during recursive loops, demonstrating stack growth up to the 1024-frame EVM limit.
-- **Storage Diff Tracker**: Color-codes mutated slots (green = updated, red = stale/vulnerable).
-- **Gas Profiler**: Dynamically tallies gas consumed by opcodes (`SLOAD`, `SSTORE`, `CALL`, `REVERT`).
 
 ---
 
 ## 🚀 Quick Start & How to Run
 
-### Option 1: Double-Click (Zero Setup)
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/madhura2137/Blockchain-Attacks.git
-   ```
-2. Open the cloned folder and double-click `index.html`.
-3. The lab runs immediately in any modern browser (**Chrome**, **Edge**, **Firefox**, **Brave**, **Safari**).
+### Method 1: Instant Browser View (Zero Installation)
+Simply double-click `index.html` on any device or computer. The simulator requires **no server, no node_modules, and no internet connection**.
 
-### Option 2: Local HTTP Server (VS Code / Python / Node)
+### Method 2: Local HTTP Server (Optional)
+If you prefer running via a local server:
+
 ```bash
-# Using Python 3
+# Using Python 3:
 python -m http.server 8000
 
-# Using Node.js (npx)
+# Using Node.js npx:
 npx serve .
 ```
-Navigate to `http://localhost:8000` in your web browser.
+
+Open `http://localhost:8000` in your browser.
 
 ---
 
-## ⚙️ Enabling GitHub Pages (To Host Your Own Live Site)
+## ⌨️ Keyboard Shortcuts for Presenters
 
-To host this repository online for free using GitHub Pages:
-
-1. Go to your repository on GitHub: `https://github.com/madhura2137/Blockchain-Attacks`.
-2. Click on **Settings** (top right tab).
-3. In the left sidebar, click on **Pages**.
-4. Under **Build and deployment** > **Branch**:
-   - Select `main` branch.
-   - Folder: `/ (root)`.
-5. Click **Save**.
-6. Within 1-2 minutes, your live website will be published at:  
-   `https://madhura2137.github.io/Blockchain-Attacks/`
+| Shortcut | Action | Description |
+| :---: | :--- | :--- |
+| <kbd>P</kbd> | **Toggle Presentation Mode** | Toggles top presentation navigation bar and slides view. |
+| <kbd>S</kbd> | **Toggle Speaker Notes** | Opens slide-out presenter notes drawer with talking points. |
+| <kbd>→</kbd> | **Next Tab / Attack** | Advances sequentially to the next simulation module. |
+| <kbd>←</kbd> | **Previous Tab / Attack** | Returns to the previous simulation module. |
 
 ---
 
@@ -273,39 +160,55 @@ Use this script during your classroom or viva presentation:
 
 ```text
 ================================================================================
-                    3-MINUTE VIVA PRESENTATION SCRIPT
+                    5-MINUTE VIVA PRESENTATION SCRIPT
 ================================================================================
 
 1. INTRODUCTION (30s)
-   "Good morning respected professor. Smart contracts on blockchain networks are
-   immutable and manage billions of dollars. Because 'code is law', a logic bug
-   cannot be patched in-place once deployed. Today, I present an interactive Web3
-   Security Simulator showcasing 3 historic exploits: The DAO Reentrancy, the 
-   $625M Ronin Bridge multi-sig breach, and Parity's unprotected initializer."
+   "Good morning respected professors. Distributed ledgers and smart contracts
+   are immutable and manage hundreds of billions of dollars. Because 'code is law',
+   logic vulnerabilities cannot be patched on-the-fly once deployed. Today, I 
+   present an interactive offline laboratory demonstrating 6 fundamental attacks
+   and their cryptographic/architectural solutions."
 
-2. MODULE 1: THE DAO REENTRANCY (60s)
-   - Show Normal Withdrawal: "In honest operation, balance checks pass, 10 ETH is
-     sent, and recorded balance drops to 0."
-   - Show Attack Flow: "In the vulnerable code, line 7 executes the external call
-     BEFORE line 11 updates storage. The attacker's fallback re-calls withdraw()
-     recursively while balance still reads 10 ETH. 30 ETH is drained from a 10 ETH
-     deposit."
-   - Show Patched Code: "Switching to Patched Mode demonstrates the Checks-Effects-
-     Interactions pattern. Updating storage first neutralizes reentrancy, while
-     OpenZeppelin's nonReentrant mutex reverts any recursive attempt."
+2. MODULE 1: 51% CONSENSUS ATTACK (45s)
+   - "Under Nakamoto Consensus, nodes follow the Longest Chain Rule.
+     If an attacker acquires >50% hashrate, they can secretly outmine the honest
+     network and force a chain reorganization, orphaning verified transactions."
+   - Demo: Click 'Next Attack Step' ➔ Show private fork outracing honest chain ➔
+     Show orphan reorg ➔ Switch to Patched (Casper FFG Checkpoints) ➔ Show reorg blocked.
 
-3. MODULE 2: RONIN BRIDGE COMPROMISE (45s)
-   - Show 5/9 Quorum: "Ronin relied on a 5 of 9 Proof-of-Authority threshold. 
-     Through spear-phishing and a forgotten RPC signing whitelist on Axie DAO, 
-     Lazarus obtained 5 valid keys, satisfying quorum and draining $625M."
-   - Show Defense: "Mitigation enforces 9/11 independent signers, 24h timelocks
-     for large transfers, and automated volume anomaly circuit breakers."
+3. MODULE 2: SYBIL IDENTITY FORGERY (45s)
+   - "In naive peer networks, counting IP addresses allows 1 attacker to spin up
+     6 virtual personas for $0 and usurp governance decisions."
+   - Demo: Show SVG puppet wires connected to 1 laptop ➔ Show rigged ballot ➔
+     Switch to Proof-of-Stake ➔ Show bot identities have 0 stake and 0 voting power.
 
-4. MODULE 3: PARITY UNPROTECTED INITIALIZER (30s)
-   - Show Exploit: "Constructors run only at deployment. For libraries and proxies,
-     developers use init functions. Parity left initWallet() public without an
-     access modifier, allowing anyone to claim ownership and call selfdestruct."
-   - Show Defense: "We fix this with OpenZeppelin's Initializable pattern."
+4. MODULE 3: DOUBLE SPENDING (45s)
+   - "When merchants accept 0-confirmation transactions, an attacker can broadcast
+     a competing transaction with higher gas fees, claiming the same UTXO coin."
+   - Demo: Show Bob handing laptop on 0-conf ➔ Show Tx-B mining into Block #502 ➔
+     Show Bob defrauded ➔ Switch to 6-Confirmation Rule ➔ Bob detects mempool race and saves product.
+
+5. MODULE 4: THE DAO REENTRANCY (45s)
+   - "In The DAO hack, external call msg.sender.call.value() was invoked BEFORE
+     updating internal balances. An attacker's fallback function re-entered withdraw()
+     recursively, draining all 30 ETH."
+   - Demo: Show Call Stack recursion ➔ Switch to Patched ➔ Show Checks-Effects-Interactions (CEI).
+
+6. MODULE 5: RONIN BRIDGE 5/9 QUORUM (45s)
+   - "Axie Infinity's Ronin Bridge used a 5-of-9 validator multi-sig. Lazarus Group
+     compromised 4 Sky Mavis nodes and obtained a 5th signature via stale RPC permissions."
+   - Demo: Compromise 5 keys ➔ Vault door unlocks ➔ Switch to Patched 11-of-15 model.
+
+7. MODULE 6: CONTRACT BUGS - UNDERFLOW & ACCESS (45s)
+   - "Pre-0.8 Solidity suffered from unsigned integer underflow (0 - 1 = 255).
+     Additionally, omitting onlyOwner on admin functions allows any account to claim ownership."
+   - Demo: Show spinning mechanical odometer rolling backwards ➔ Show ownership theft ➔ Show SafeMath / onlyOwner patch.
+
+8. CONCLUSION (30s)
+   - "Security in Web3 requires defense-in-depth: Checks-Effects-Interactions, 
+     formal verification, multi-institutional staking, and strict confirmation depth.
+     Thank you! I welcome any questions."
 ================================================================================
 ```
 
@@ -313,30 +216,51 @@ Use this script during your classroom or viva presentation:
 
 ## ❓ Frequently Asked Viva Questions
 
-| # | Question | Comprehensive Answer |
-|:-:|:---|:---|
-| **1** | **What is reentrancy in smart contracts?** | Reentrancy occurs when a contract makes an external call to an untrusted contract before completing its internal state updates. The recipient contract hijacks the control flow and calls back into the caller repeatedly before storage updates finish. |
-| **2** | **What is the Checks-Effects-Interactions (CEI) pattern?** | It is an essential Solidity development pattern: 1) **Checks**: validate conditions (`require`); 2) **Effects**: mutate contract state/storage; 3) **Interactions**: perform external contract calls or value transfers last. |
-| **3** | **Why did Ethereum split into ETH and ETC after The DAO?** | The DAO held 15% of all circulating Ether. The community voted to implement an irregular state transition (hard fork) to refund victims. Those advocating code immutability remained on the original chain, now known as **Ethereum Classic (ETC)**. |
-| **4** | **What is a Mutex / ReentrancyGuard?** | A state lock pattern (such as OpenZeppelin's `nonReentrant`). It sets a storage slot to a non-zero value upon entering a function, and reverts if any sub-call attempts to enter any guarded function before the initial execution returns. |
-| **5** | **Why did the Ronin Bridge exploit take 6 days to detect?** | Because cryptographically, the transaction was valid. It possessed 5 authentic ECDSA signatures satisfying the contract's quorum logic. Without off-chain monitoring, timelocks, or anomaly detection, the contract executed the valid request as designed. |
-| **6** | **What is the difference between `call`, `delegatecall`, and `transfer`?** | `call` executes code in the context of the external contract; `delegatecall` executes code from the target library within the caller's storage context; `transfer` forwards a hard gas stipend limit of 2300 gas (deprecated due to changing gas costs). |
-| **7** | **Why can't constructors be used in proxy / upgradeable contracts?** | Constructors execute in the context of contract deployment and are not stored in runtime bytecode. Proxies delegate calls to the implementation logic contract, meaning only runtime functions can mutate proxy storage slots. |
-| **8** | **How does Solidity 0.8.x handle arithmetic overflow/underflow?** | Prior to 0.8.0, arithmetic operations wrapped silently without reverting (requiring SafeMath). In Solidity 0.8.0+, all integer arithmetic includes native compiler-level overflow/underflow checks that automatically revert the transaction. |
+<details>
+<summary><strong>Q1: Why doesn't a 51% attack break private key cryptography?</strong></summary>
+
+> **Answer:** A 51% attack targets the *consensus ordering* layer, NOT the *cryptographic signature* layer. An attacker cannot forge ECDSA digital signatures or steal arbitrary private keys. What they can do is outpace the honest network to reverse their *own* previous spendings (double spending) or censor other people's transactions from entering blocks.
+</details>
+
+<details>
+<summary><strong>Q2: How does Proof-of-Stake prevent Sybil attacks?</strong></summary>
+
+> **Answer:** In Proof-of-Stake, consensus voting weight is directly proportional to scarce financial capital locked as collateral (e.g., 32 ETH per validator), NOT the number of virtual socket connections or IP addresses. Spinning up 1,000 fake IP addresses with 0 ETH gives an attacker exactly 0% voting influence.
+</details>
+
+<details>
+<summary><strong>Q3: What is the Checks-Effects-Interactions (CEI) pattern in Solidity?</strong></summary>
+
+> **Answer:** CEI is a defensive programming pattern designed to neutralize reentrancy vulnerabilities:
+> 1. **Checks:** Validate preconditions (e.g. `require(balances[msg.sender] >= amount)`).
+> 2. **Effects:** Update contract internal state/balances *first* (e.g. `balances[msg.sender] -= amount`).
+> 3. **Interactions:** Perform external calls and transfer Ether *last* (e.g. `(bool success, ) = msg.sender.call{value: amount}("")`).
+</details>
+
+<details>
+<summary><strong>Q4: Why did Axie Infinity's Ronin Bridge compromise succeed despite using multi-sig?</strong></summary>
+
+> **Answer:** The bridge used a 5-out-of-9 threshold. However, 4 validator keys were held by a single entity (Sky Mavis), and the 5th was an Axie DAO validator that had previously granted temporary signature authority to Sky Mavis that was never revoked. When Sky Mavis's internal network was breached via social engineering, the attacker gained control of all 5 keys simultaneously, defeating the purpose of decentralization.
+</details>
+
+<details>
+<summary><strong>Q5: How does Solidity 0.8+ prevent integer underflow and overflow?</strong></summary>
+
+> **Answer:** Prior to Solidity 0.8, arithmetic operations in the EVM wrapped around automatically upon reaching numeric limits (`0 - 1 = 255` in `uint8`), requiring the `SafeMath` library. Starting with Solidity 0.8.0, the compiler injects opcode-level overflow and underflow checks by default that automatically revert the transaction with Panic code `0x11` whenever arithmetic boundaries are breached.
+</details>
 
 ---
 
 ## 📁 Repository Structure
 
-```
+```text
 Blockchain-Attacks/
-├── index.html                   # Core interactive laboratory web application
-├── style.css                    # Web3 dark theme, responsive layout & animations
-├── script.js                    # EVM state machine, audio synthesizer & simulation logic
-├── README.md                    # Comprehensive documentation, viva scripts & architecture
+├── index.html                   # Master interactive simulation dashboard (9 tabs)
+├── style.css                    # Professional cybersecurity dark theme & animations
+├── script.js                    # State machines, Web Audio synthesizer, & presenter controls
 ├── LICENSE                      # MIT Open Source License
-├── .gitignore                   # Standard exclusions for OS, editor & build artifacts
-└── Blockchain-Security-Demo/    # Standalone package directory
+├── README.md                    # Comprehensive documentation, viva script, & architecture
+└── Blockchain-Security-Demo/    # Standalone mirror package for offline portability
     ├── index.html
     ├── style.css
     └── script.js
@@ -346,11 +270,4 @@ Blockchain-Attacks/
 
 ## 📜 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
----
-
-<div align="center">
-  <b>Developed for Third Year B.Tech / B.E. Blockchain Technology (BCT) Academic Evaluation & Demonstration</b><br>
-  <sub>Contributions, issues, and star ratings are welcome!</sub>
-</div>
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details. Built exclusively for academic, research, and classroom educational demonstrations.

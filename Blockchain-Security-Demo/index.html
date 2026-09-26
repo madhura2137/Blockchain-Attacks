@@ -3,36 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blockchain Security Lab — Interactive Attack & Defense Simulations</title>
+    <title>Blockchain Security — Famous Attacks Interactive Lab</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts -->
+    <!-- Google Fonts for Web3 Cyber Aesthetic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- Floating Coin Container for Animations -->
+    <!-- Floating Particles & Coin Container for Animations -->
     <div id="coinParticleContainer" class="coin-particles"></div>
 
-    <!-- Top Navigation Header -->
+    <!-- Top Application Header -->
     <header class="header">
         <div class="header-left">
-            <div class="logo-badge">
+            <div class="logo-badge" onclick="switchLabTab('home')" style="cursor: pointer;">
                 <span class="pulse-dot"></span>
                 <span class="logo-icon">🛡️</span>
             </div>
             <div>
-                <h1>BLOCKCHAIN SECURITY LAB</h1>
-                <p class="subtitle">Interactive Visual Exploit & Defense Demonstrator for Classroom Presentations</p>
+                <h1 onclick="switchLabTab('home')" style="cursor: pointer;">BLOCKCHAIN SECURITY LAB</h1>
+                <p class="subtitle">Famous Attacks and Prevention — Interactive Educational Classroom Simulator</p>
             </div>
         </div>
         <div class="header-right">
+            <button id="presModeBtn" class="pill-btn highlight-gold" onclick="togglePresentationMode()" title="Toggle Simplified Presentation Mode">
+                🎤 Presentation Mode
+            </button>
+            <button id="speakerNotesBtn" class="pill-btn highlight-blue" onclick="toggleSpeakerNotes()" title="Open Presenter Script">
+                🎙️ Presenter Script
+            </button>
             <button id="soundToggleBtn" class="pill-btn" onclick="toggleSound()" title="Toggle Sound FX">
                 🔊 Sound: <span id="soundStatusText">ON</span>
-            </button>
-            <button id="speakerNotesBtn" class="pill-btn highlight" onclick="toggleSpeakerNotes()" title="Open Presentation Script">
-                🎙️ Presenter Script
             </button>
         </div>
     </header>
@@ -40,60 +43,867 @@
     <!-- Presenter Script Drawer (Collapsible) -->
     <section id="speakerNotesDrawer" class="speaker-drawer hidden">
         <div class="speaker-drawer-header">
-            <h3>🎙️ Presenter's Cheat Sheet — What to Say to Your Professor & Class</h3>
+            <div class="drawer-title-group">
+                <span class="drawer-icon">🎙️</span>
+                <h3>Presenter's Classroom Script — What to Say to Your Professor & Class</h3>
+            </div>
             <button class="close-btn" onclick="toggleSpeakerNotes()">✕</button>
         </div>
         <div class="speaker-content">
-            <div id="speakerNoteDAO" class="speaker-note-tab">
-                <p><strong>Everyday Analogy:</strong> "Imagine an ATM that gives you the cash <em>before</em> deducting it from your bank card. If you press 'Withdraw' again while the cash dispenser is open, you can keep taking cash until the machine is empty!"</p>
-                <p><strong>Demonstrating Normal Withdrawal:</strong> "Click 'Normal Withdrawal'. The contract checks the balance, sends 10 ETH, and updates balance to 0. This is how it should work."</p>
-                <p><strong>Demonstrating the Attack:</strong> "Switch to Vulnerable Mode. The contract sends the ETH <em>before</em> updating the balance. When the attacker's fallback function receives the ETH, it recursively calls <code>withdraw()</code> again and again!"</p>
-                <p><strong>The Fix:</strong> "Switch to Patched Mode. Using the Checks-Effects-Interactions (CEI) pattern, the balance is set to 0 <em>first</em>. When the attacker re-enters, the check fails with <code>require(bal > 0)</code> and the exploit is completely blocked!"</p>
+            <div id="speakerNoteHome" class="speaker-note-tab">
+                <p><strong>Introduction:</strong> "Respected professor and classmates, blockchain networks secure hundreds of billions of dollars. We often hear that blockchain is 'unhackable,' but code is law—if the consensus, peer networking, or smart contract logic has a flaw, that vulnerability is permanent. Today I present our interactive laboratory exploring famous blockchain attack vectors and their cryptographic defenses."</p>
+            </div>
+            <div id="speakerNoteFiftyOne" class="speaker-note-tab hidden">
+                <p><strong>Everyday Analogy:</strong> "Imagine a school bus of 100 students voting on whether to go to the Library (Honest 70%) or the Waterpark (Attacker 30%). If a group recruits 21 more students to reach 51%, they now control the majority vote, and the bus is forced to go to the Waterpark!"</p>
+                <p><strong>51% Attack Script:</strong> "In a proof-of-work or proof-of-stake system, consensus depends on the honest majority assumption. Notice initially the honest miners hold 70% of the hashing power. If an attacker acquires over 50% power, they can secretly build a longer chain. When broadcasted, the network's Nakamoto consensus reorganizes recent blocks to accept the longer attacker chain. Crucially, a 51% attack does NOT break cryptography or steal private keys—it enables transaction censorship and recent block reorganization."</p>
+            </div>
+            <div id="speakerNoteSybil" class="speaker-note-tab hidden">
+                <p><strong>Everyday Analogy:</strong> "Imagine an ice cream shop giving away 1 free scoop per person. One kid puts on 6 different fake disguises—sunglasses, wigs, hats—and gets in line 6 times! If the group votes on a flavor, that 1 kid casts 6 votes and overpowers 4 honest kids."</p>
+                <p><strong>Sybil Attack Script:</strong> "In peer-to-peer networks, a Sybil attack occurs when a single attacker creates dozens of pseudonymous fake identities. If a system naively counts identities—such as one-IP-one-vote—the attacker easily overpowers the 4 real participants. To prevent Sybil attacks, blockchains impose real economic or physical costs on identity creation, such as Proof-of-Work energy or Proof-of-Stake financial capital."</p>
+            </div>
+            <div id="speakerNoteDoubleSpend" class="speaker-note-tab hidden">
+                <p><strong>Everyday Analogy:</strong> "Imagine handing a $100 bill to a cashier in Store A, and simultaneously sprinting across the street to hand that exact same bill to a cashier in Store B before the first cashier puts it in the register! Physical cash cannot be in two registers at once, but unconfirmed digital data can be sent to two servers."</p>
+                <p><strong>Double Spending Script:</strong> "Physical cash cannot be duplicated, but digital bits can. Double spending is attempting to spend the exact same digital asset twice across conflicting transactions. Alice broadcasts Transaction A to pay Bob, while simultaneously broadcasting Transaction B to pay Charlie with the same coin. The decentralized blockchain network solves this through consensus validation—only one transaction is confirmed into a block, and the conflicting transaction is rejected."</p>
+            </div>
+            <div id="speakerNoteDAO" class="speaker-note-tab hidden">
+                <p><strong>Everyday Analogy:</strong> "Imagine an ATM that gives you cash before deducting it from your bank card. If you press withdraw again while the dispenser is open, you can keep taking cash!"</p>
+                <p><strong>DAO Attack Step-by-Step Script:</strong> "Initially, the attacker has a recorded balance of 10 ETH. The vulnerable contract sends the ETH before updating the balance. When the attacker's malicious contract receives the ETH, it calls withdraw() again. Because the original balance is still recorded as 10 ETH, the contract sends another 10 ETH. This process can repeat. Now we enable protection: the contract updates the balance to zero before sending the ETH (Checks-Effects-Interactions). When the attacker tries to re-enter, the balance is already zero, so the second withdrawal is rejected."</p>
             </div>
             <div id="speakerNoteRonin" class="speaker-note-tab hidden">
-                <p><strong>Everyday Analogy:</strong> "Imagine a bank vault with 9 locks. Any 5 keys together will open the door. But 4 of the keys were stored in the manager's office desk, and the 5th key was in a shared drawer. One phishing email got the hacker all 5 keys!"</p>
-                <p><strong>The Attack Vector:</strong> "In March 2022, hackers stole $625 Million from the Ronin Bridge. They used a fake LinkedIn job offer PDF to infect an engineer's laptop, stealing 4 keys, then abused an active RPC whitelist to sign with the 5th key."</p>
-                <p><strong>The Defense:</strong> "Modern bridges use 11-of-15 multi-party thresholds across decentralized companies, combined with 48-hour timelocks on large transactions so malicious withdrawals can be frozen before money leaves."</p>
+                <p><strong>Everyday Analogy:</strong> "Imagine a bank vault with 9 locks. Any 5 keys together will open the door. But 4 of the keys were on one manager's desk, and the 5th was in a shared drawer. One phishing email got the hacker all 5 keys!"</p>
+                <p><strong>Ronin Bridge Script:</strong> "In March 2022, Axie Infinity's Ronin Bridge lost $625 Million. The bridge relied on a 5-out-of-9 validator multi-signature scheme. The attackers used a spear-phishing PDF to compromise 4 Sky Mavis nodes and exploited a stale, forgotten RPC whitelist to forge the 5th signature from Axie DAO. Once 5 of 9 was reached, quorum was satisfied and funds were unlocked. Prevention requires validator diversity, 9-of-11 thresholds, 24-hour timelocks, and anomaly circuit breakers."</p>
             </div>
             <div id="speakerNoteBugs" class="speaker-note-tab hidden">
-                <p><strong>Bug 1 (Integer Underflow):</strong> "Imagine an old car odometer at 000 miles. If you roll it backwards 1 mile, it wraps around to 999,999 miles! In Solidity before version 0.8, subtracting 1 from 0 rolled over to $2^{256}-1$—giving the attacker billions of free tokens!"</p>
+                <p><strong>Bug 1 (Integer Underflow):</strong> "Imagine an old car odometer at 000 miles. If you roll it backwards 1 mile, it wraps around to 999,999 miles! In Solidity before version 0.8, subtracting 1 from 0 rolled over to 2^256-1—giving the attacker billions of free tokens!"</p>
                 <p><strong>Bug 2 (Missing Access Control):</strong> "Imagine a bank vault door with a sign saying 'Managers Only', but the builder forgot to install a lock! Anyone can walk in, click 'Claim Ownership', and empty the vault. Adding the <code>onlyOwner</code> modifier fixes it."</p>
+                <p><strong>Bug 3 (Side-by-Side CEI):</strong> "Here we see a direct side-by-side comparison of vulnerable code versus protected code. On the left, 'Send Money' occurs before 'Update Balance', allowing recursive re-entry. On the right, 'Update Balance' happens before 'Send Money' using the Checks-Effects-Interactions pattern and OpenZeppelin's nonReentrant mutex lock."</p>
+            </div>
+            <div id="speakerNotePrevention" class="speaker-note-tab hidden">
+                <p><strong>Prevention Summary Script:</strong> "To conclude, securing a blockchain ecosystem requires defense-in-depth across six distinct layers: protocol consensus, peer identity, transaction finality, smart contract hygiene, key management, and off-chain monitoring. Every layer matters."</p>
             </div>
         </div>
     </section>
 
-    <!-- Lab Tab Navigation Bar -->
+    <!-- Presentation Mode Floating Banner (Active during 🎤 Presentation Mode) -->
+    <div id="presentationBanner" class="presentation-banner hidden">
+        <div class="pres-info">
+            <span class="pres-badge">🎤 PRESENTATION MODE</span>
+            <span id="presCurrentTitle" class="pres-title">Current Simulation</span>
+            <span id="presStepCounter" class="pres-step">Step 1 of 4</span>
+        </div>
+        <div class="pres-controls">
+            <button class="pres-btn" onclick="presPrevStep()">⏮️ Prev</button>
+            <button class="pres-btn highlight" onclick="presNextStep()">⏭️ Next Step</button>
+            <button class="pres-btn" onclick="presRestart()">🔄 Restart</button>
+            <button class="pres-btn attack-btn" onclick="presTriggerAttack()">⚔️ Attack</button>
+            <button class="pres-btn safe-btn" onclick="presTriggerProtect()">🛡️ Protect</button>
+            <button class="pres-btn" onclick="toggleSpeakerNotes()">🎙️ Script</button>
+            <button class="pres-btn close" onclick="togglePresentationMode()">✕ Exit</button>
+        </div>
+    </div>
+
+    <!-- Main Navigation Bar (9 Tabs) -->
     <nav class="lab-nav">
-        <button class="nav-tab active" data-tab="dao" onclick="switchLabTab('dao')">
-            <span class="tab-badge red">DEMO 1</span>
-            <span class="tab-title">🔴 The DAO Reentrancy</span>
-            <span class="tab-desc">The Glitched ATM (Call Stack Exploit)</span>
+        <button class="nav-tab active" data-tab="home" onclick="switchLabTab('home')">
+            <span class="tab-badge blue">OVERVIEW</span>
+            <span class="tab-title">🏠 Home</span>
+            <span class="tab-desc">Security Architecture</span>
+        </button>
+        <button class="nav-tab" data-tab="fiftyone" onclick="switchLabTab('fiftyone')">
+            <span class="tab-badge red">ATTACK 1</span>
+            <span class="tab-title">⛏️ 51% Attack</span>
+            <span class="tab-desc">Consensus Majority</span>
+        </button>
+        <button class="nav-tab" data-tab="sybil" onclick="switchLabTab('sybil')">
+            <span class="tab-badge orange">ATTACK 2</span>
+            <span class="tab-title">👥 Sybil Attack</span>
+            <span class="tab-desc">Forged Identities</span>
+        </button>
+        <button class="nav-tab" data-tab="doublespend" onclick="switchLabTab('doublespend')">
+            <span class="tab-badge purple">ATTACK 3</span>
+            <span class="tab-title">🪙 Double Spending</span>
+            <span class="tab-desc">Conflicting Txns</span>
+        </button>
+        <button class="nav-tab" data-tab="dao" onclick="switchLabTab('dao')">
+            <span class="tab-badge red">ATTACK 4</span>
+            <span class="tab-title">🔴 The DAO Attack</span>
+            <span class="tab-desc">Reentrancy Drain</span>
         </button>
         <button class="nav-tab" data-tab="ronin" onclick="switchLabTab('ronin')">
-            <span class="tab-badge orange">DEMO 2</span>
-            <span class="tab-title">🌉 Ronin Bridge Hack</span>
-            <span class="tab-desc">The 9-Lock Door (5/9 Multi-Sig Compromise)</span>
+            <span class="tab-badge orange">ATTACK 5</span>
+            <span class="tab-title">🌉 Ronin Bridge</span>
+            <span class="tab-desc">5/9 Multi-Sig Hack</span>
         </button>
         <button class="nav-tab" data-tab="bugs" onclick="switchLabTab('bugs')">
-            <span class="tab-badge purple">DEMO 3</span>
-            <span class="tab-title">🐛 Smart Contract Bugs</span>
-            <span class="tab-desc">Underflow Odometer & Unlocked Admin Doors</span>
+            <span class="tab-badge cyan">ATTACK 6</span>
+            <span class="tab-title">🐛 Contract Bugs</span>
+            <span class="tab-desc">Underflow & Access</span>
+        </button>
+        <button class="nav-tab" data-tab="prevention" onclick="switchLabTab('prevention')">
+            <span class="tab-badge green">MATRIX</span>
+            <span class="tab-title">🛡️ Prevention</span>
+            <span class="tab-desc">Defense in Depth</span>
         </button>
         <button class="nav-tab" data-tab="quiz" onclick="switchLabTab('quiz')">
-            <span class="tab-badge green">QUIZ</span>
-            <span class="tab-title">🎓 Classroom Quiz</span>
-            <span class="tab-desc">Test Audience Understanding</span>
+            <span class="tab-badge gold">QUIZ</span>
+            <span class="tab-title">🎓 Quick Quiz</span>
+            <span class="tab-desc">Classroom Q&A</span>
         </button>
     </nav>
 
-    <!-- MAIN LAB WORKSPACE -->
+    <!-- MAIN LAB WORKSPACE CONTAINER -->
     <main class="lab-workspace">
 
         <!-- ==================================================== -->
-        <!-- TAB 1: THE DAO REENTRANCY ATTACK SIMULATION         -->
+        <!-- TAB 0: HOME / OVERVIEW & ARCHITECTURE               -->
         <!-- ==================================================== -->
-        <section id="tab-dao" class="tab-panel active">
+        <section id="tab-home" class="tab-panel active">
             
+            <div class="hero-card">
+                <div class="hero-badge">COLLEGE PRESENTATION • BLOCKCHAIN TECHNOLOGY (BCT)</div>
+                <h1 class="hero-title">Blockchain Security<br><span class="hero-gradient">Interactive Attack Lab</span></h1>
+                <p class="hero-subtitle">“Understand the attack. Watch the attack. Stop the attack.”</p>
+                <p class="hero-desc">A safe, offline visual classroom laboratory designed for engineering evaluations. No cryptocurrency, no real wallets, no backend required. Pure client-side state machine animations demonstrating how landmark blockchain vulnerabilities occur and how cryptographic defenses neutralize them.</p>
+                <div class="hero-actions">
+                    <button class="primary-btn pulse-glow" onclick="switchLabTab('fiftyone')">🚀 Launch First Attack Simulation (51%)</button>
+                    <button class="secondary-btn" onclick="togglePresentationMode()">🎤 Start Classroom Presentation Mode</button>
+                </div>
+            </div>
+
+            <!-- 6 Attack Cards Grid -->
+            <div class="section-title-wrap">
+                <h2>🎯 Six Landmark Blockchain Exploits</h2>
+                <p>Click any card to launch its step-by-step interactive simulation</p>
+            </div>
+
+            <div class="attack-cards-grid">
+                <!-- Card 1: 51% Attack -->
+                <div class="attack-card" onclick="switchLabTab('fiftyone')">
+                    <div class="card-icon red-glow">⛏️</div>
+                    <div class="card-tag red">CONSENSUS ATTACK</div>
+                    <h3>51% Consensus Attack</h3>
+                    <p>Demonstrating how an attacker controlling over half of consensus power attempts chain reorganization and transaction censorship.</p>
+                    <div class="card-footer">
+                        <span class="sim-pill">Visual Reorg</span>
+                        <button class="launch-btn">Launch Simulation →</button>
+                    </div>
+                </div>
+
+                <!-- Card 2: Sybil Attack -->
+                <div class="attack-card" onclick="switchLabTab('sybil')">
+                    <div class="card-icon orange-glow">👥</div>
+                    <div class="card-tag orange">NETWORK IDENTITY</div>
+                    <h3>Sybil Attack</h3>
+                    <p>A single adversary creates dozens of forged pseudonymous digital identities to overpower naive voting mechanisms and peer routing.</p>
+                    <div class="card-footer">
+                        <span class="sim-pill">Identity Graph</span>
+                        <button class="launch-btn">Launch Simulation →</button>
+                    </div>
+                </div>
+
+                <!-- Card 3: Double Spending -->
+                <div class="attack-card" onclick="switchLabTab('doublespend')">
+                    <div class="card-icon purple-glow">🪙</div>
+                    <div class="card-tag purple">TRANSACTION CONFLICT</div>
+                    <h3>Double Spending</h3>
+                    <p>Attempting to spend the same underlying digital asset twice across conflicting transactions, and how Nakamoto consensus resolves it.</p>
+                    <div class="card-footer">
+                        <span class="sim-pill">Mempool Conflict</span>
+                        <button class="launch-btn">Launch Simulation →</button>
+                    </div>
+                </div>
+
+                <!-- Card 4: DAO Reentrancy -->
+                <div class="attack-card" onclick="switchLabTab('dao')">
+                    <div class="card-icon red-glow">🔴</div>
+                    <div class="card-tag red">SMART CONTRACT LOGIC</div>
+                    <h3>The DAO Reentrancy (2016)</h3>
+                    <p>The historic $60M exploit where recursive external fallback calls drained 3.6M ETH before contract storage balance was decremented.</p>
+                    <div class="card-footer">
+                        <span class="sim-pill">Recursive Stack</span>
+                        <button class="launch-btn">Launch Simulation →</button>
+                    </div>
+                </div>
+
+                <!-- Card 5: Ronin Bridge -->
+                <div class="attack-card" onclick="switchLabTab('ronin')">
+                    <div class="card-icon gold-glow">🌉</div>
+                    <div class="card-tag orange">KEY & MULTI-SIG COMPROMISE</div>
+                    <h3>Ronin Bridge Attack ($625M)</h3>
+                    <p>How 5 of 9 Proof-of-Authority validator keys were forged via spear-phishing and a stale RPC whitelist to trigger unauthorized fund unlock.</p>
+                    <div class="card-footer">
+                        <span class="sim-pill">5/9 Quorum</span>
+                        <button class="launch-btn">Launch Simulation →</button>
+                    </div>
+                </div>
+
+                <!-- Card 6: Smart Contract Bugs -->
+                <div class="attack-card" onclick="switchLabTab('bugs')">
+                    <div class="card-icon cyan-glow">🐛</div>
+                    <div class="card-tag cyan">CODE-LEVEL DEFENSE</div>
+                    <h3>Smart Contract Bugs</h3>
+                    <p>Explore integer underflow odometer rollbacks, broken access control in treasuries, and side-by-side CEI pattern defense.</p>
+                    <div class="card-footer">
+                        <span class="sim-pill">Underflow & Access</span>
+                        <button class="launch-btn">Launch Simulation →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- "What Are We Protecting?" Architecture Stack -->
+            <div class="protection-stack-section">
+                <div class="section-title-wrap">
+                    <h2>🛡️ What Are We Protecting?</h2>
+                    <p>Security is not a single feature—it is a continuous chain across six interconnected layers.</p>
+                </div>
+
+                <div class="layers-container">
+                    <div class="layer-item">
+                        <div class="layer-num">1</div>
+                        <div class="layer-content">
+                            <h4>Blockchain Protocol</h4>
+                            <p>Underlying peer-to-peer gossip network, block propagation limits, and cryptographic primitives (SHA-256, Keccak-256).</p>
+                        </div>
+                    </div>
+                    <div class="layer-item">
+                        <div class="layer-num">2</div>
+                        <div class="layer-content">
+                            <h4>Consensus Mechanism</h4>
+                            <p>Proof-of-Work / Proof-of-Stake rules ensuring all distributed nodes agree on a single canonical transaction history.</p>
+                        </div>
+                    </div>
+                    <div class="layer-item">
+                        <div class="layer-num">3</div>
+                        <div class="layer-content">
+                            <h4>Smart Contracts</h4>
+                            <p>Immutable application logic executing on EVM. Vulnerable to reentrancy, unprotected initializers, and integer flaws.</p>
+                        </div>
+                    </div>
+                    <div class="layer-item">
+                        <div class="layer-num">4</div>
+                        <div class="layer-content">
+                            <h4>Private Keys</h4>
+                            <p>Elliptic curve private keys (ECDSA) controlling user wallets and bridge admin roles. Vulnerable to phishing and leaks.</p>
+                        </div>
+                    </div>
+                    <div class="layer-item">
+                        <div class="layer-num">5</div>
+                        <div class="layer-content">
+                            <h4>Validators & Signers</h4>
+                            <p>Distributed node operators signing blocks and multi-sig bridge approvals. Must be decentralized and independent.</p>
+                        </div>
+                    </div>
+                    <div class="layer-item">
+                        <div class="layer-num">6</div>
+                        <div class="layer-content">
+                            <h4>Infrastructure & Relayers</h4>
+                            <p>RPC endpoints, web servers, frontend hosting, and oracles feeding external price and weather data to contracts.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="core-principle-banner">
+                    <div class="principle-icon">💡</div>
+                    <div class="principle-text">
+                        <h3>Core Cybersecurity Principle</h3>
+                        <p><strong>“Blockchain is not automatically secure. Security depends on every layer working correctly.”</strong> If smart contract logic fails, or if validator private keys leak, the immutability of the blockchain will only permanently etch the theft into history.</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- TAB 1: 51% CONSENSUS MAJORITY ATTACK SIMULATION     -->
+        <!-- ==================================================== -->
+        <section id="tab-fiftyone" class="tab-panel hidden">
+            
+            <!-- ELI5 Everyday Metaphor Banner -->
+            <div class="eli5-banner">
+                <div class="eli5-icon">🚌</div>
+                <div class="eli5-content">
+                    <span class="eli5-tag">EXPLAIN LIKE I'M 5 (EVERYDAY ANALOGY)</span>
+                    <h3>The 51-Student Bus Takeover</h3>
+                    <p>Imagine a school bus with 100 students voting on whether to go to the Library (Honest 70%) or the Waterpark (Attacker 30%). Normally, the 70 honest students win easily. But if a bully group recruits 21 more students to reach 51%, they suddenly control the absolute majority! By democratic majority rules, the bus is forced to turn toward the Waterpark. In blockchain Proof-of-Work, controlling >50% of computing power lets an attacker overpower honest miners and rewrite recent blocks (Chain Reorganization)!</p>
+                </div>
+            </div>
+
+            <div class="panel-header">
+                <div class="panel-info">
+                    <h2>⛏️ 51% Attack — Consensus Majority Simulation</h2>
+                    <p>Demonstrating how an attacker controlling more than half of consensus power can potentially influence recent blocks.</p>
+                </div>
+                
+                <!-- Vulnerable vs Patched Toggle -->
+                <div class="mode-toggle-card">
+                    <span class="mode-label">Consensus Security Model:</span>
+                    <div class="segmented-control">
+                        <button id="fiftyOneModeVuln" class="segment-btn active danger" onclick="setFiftyOneMode('vulnerable')">
+                            ⚠️ Low Hashrate (Vulnerable)
+                        </button>
+                        <button id="fiftyOneModePatched" class="segment-btn safe" onclick="setFiftyOneMode('patched')">
+                            🛡️ High Scale + Finality (Secured)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disclaimer Notice -->
+            <div class="disclaimer-banner">
+                <span class="banner-icon">ℹ️</span>
+                <p><strong>Educational Model Notice:</strong> A 51% attack does <em>NOT</em> mean cryptography is broken, cannot steal private keys, and cannot fabricate unlimited coins. It allows the majority holder to attempt chain reorganizations, censor transactions, and reverse recent transfers.</p>
+            </div>
+
+            <!-- Dashboard State Cards -->
+            <div class="dashboard">
+                <div class="box">
+                    <div class="box-tag">HONEST MINER POOL</div>
+                    <h2>🛡️ Honest Network</h2>
+                    <div class="balance-display">
+                        <span class="label">Consensus Power</span>
+                        <h1 id="valHonestPower" class="funds-val">70%</h1>
+                        <p class="asset-sub"><span id="countHonestNodes">7</span> Independent Mining Nodes</p>
+                    </div>
+                    <div class="meter-bar-wrapper" style="margin-top: 10px;">
+                        <div class="dual-progress-bar">
+                            <div id="barHonest" class="bar-fill-honest" style="width: 70%;"></div>
+                        </div>
+                    </div>
+                    <p class="box-caption">Honest Chain: 4 Blocks Canonical</p>
+                </div>
+
+                <div class="box attacker-box">
+                    <div class="box-tag attack">ATTACKER MINING FARM</div>
+                    <h2>⚔️ Hostile Hashrate</h2>
+                    <div class="balance-display">
+                        <span class="label">Consensus Power</span>
+                        <h1 id="valAttackerPower">30%</h1>
+                        <p class="asset-sub"><span id="countAttackerNodes">3</span> Rented ASIC Rigs</p>
+                    </div>
+                    <div class="meter-bar-wrapper" style="margin-top: 10px;">
+                        <div class="dual-progress-bar">
+                            <div id="barAttacker" class="bar-fill-attacker" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                    <p class="box-caption" id="attackerStatusSub">Status: Minor Share (No Reorg Possible)</p>
+                </div>
+
+                <div class="box">
+                    <div class="box-tag">CONSENSUS HEALTH</div>
+                    <h2>⚖️ Network State</h2>
+                    <div class="status-indicator" style="margin-top: 14px;">
+                        <span class="status-pill safe" id="status51Badge">Network is healthy (Honest: 70%)</span>
+                    </div>
+                    <div style="margin-top: 18px; font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                        <div>Majority Threshold: <strong>> 50.0%</strong></div>
+                        <div>Reorg Risk: <strong id="reorgRiskLabel" style="color: #34d399;">VERY LOW (SAFE)</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simulation Interactive Canvas (Nodes & Blockchain) -->
+            <div class="sim-grid-2col">
+                <!-- Visual Nodes Distribution -->
+                <div class="box">
+                    <div class="box-tag">PHYSICAL MINER DISTRIBUTION</div>
+                    <h3>Network Mining Rigs (10 Nodes Total)</h3>
+                    <div class="nodes-visual-container">
+                        <div class="nodes-subgroup">
+                            <span class="group-title">Honest Mining Nodes (<span id="countHonestVisual">7</span>)</span>
+                            <div class="node-grid" id="gridHonestNodes"></div>
+                        </div>
+                        <div class="nodes-subgroup">
+                            <span class="group-title">Attacker Nodes (<span id="countAttackerVisual">3</span>)</span>
+                            <div class="node-grid" id="gridAttackerNodes"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Competing Blockchain Visualizer -->
+                <div class="box">
+                    <div class="box-tag">BLOCKCHAIN REORGANIZATION</div>
+                    <h3>Longest Chain Rule (Nakamoto Consensus)</h3>
+                    
+                    <div class="chain-diagram-area">
+                        <!-- Honest Chain -->
+                        <div class="chain-row">
+                            <div class="chain-header">
+                                <span class="badge-tag green">HONEST CHAIN (CANONICAL)</span>
+                                <span class="chain-len" id="honestChainLen">Length: 4 Blocks</span>
+                            </div>
+                            <div class="chain-blocks" id="honestBlocksContainer">
+                                <div class="block-card canonical">
+                                    <span class="b-num">Block 101</span>
+                                    <span class="b-status">✓ Valid</span>
+                                </div>
+                                <div class="chain-arrow">→</div>
+                                <div class="block-card canonical">
+                                    <span class="b-num">Block 102</span>
+                                    <span class="b-status">✓ Valid</span>
+                                </div>
+                                <div class="chain-arrow">→</div>
+                                <div class="block-card canonical" id="block103H">
+                                    <span class="b-num">Block 103</span>
+                                    <span class="b-status">Alice → Bob</span>
+                                </div>
+                                <div class="chain-arrow">→</div>
+                                <div class="block-card canonical" id="block104H">
+                                    <span class="b-num">Block 104</span>
+                                    <span class="b-status">Confirmed</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Attacker Secret / Competing Chain -->
+                        <div class="chain-row" id="attackerChainRow">
+                            <div class="chain-header">
+                                <span class="badge-tag red">ATTACKER COMPETING CHAIN</span>
+                                <span class="chain-len" id="attackerChainLen">Length: 2 Blocks (Inactive)</span>
+                            </div>
+                            <div class="chain-blocks" id="attackerBlocksContainer">
+                                <div class="block-card alt">
+                                    <span class="b-num">Block 101</span>
+                                    <span class="b-status">Genesis Fork</span>
+                                </div>
+                                <div class="chain-arrow">→</div>
+                                <div class="block-card alt">
+                                    <span class="b-num">Block 102</span>
+                                    <span class="b-status">Fork Point</span>
+                                </div>
+                                <div class="chain-arrow alt-arrow" id="altArrow1" style="opacity: 0.3;">→</div>
+                                <div class="block-card alt hidden-block" id="block103A">
+                                    <span class="b-num">Block 103A</span>
+                                    <span class="b-status">Tx Censored</span>
+                                </div>
+                                <div class="chain-arrow alt-arrow" id="altArrow2" style="opacity: 0.3;">→</div>
+                                <div class="block-card alt hidden-block" id="block104A">
+                                    <span class="b-num">Block 104A</span>
+                                    <span class="b-status">Secret Block</span>
+                                </div>
+                                <div class="chain-arrow alt-arrow" id="altArrow3" style="opacity: 0.3;">→</div>
+                                <div class="block-card alt hidden-block" id="block105A">
+                                    <span class="b-num">Block 105A</span>
+                                    <span class="b-status">⚡ LONGER CHAIN!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Standard Control Panel -->
+            <div class="control-panel">
+                <button class="btn btn-primary" id="btnFiftyOneNormal" onclick="normalFiftyOneMining()">
+                    <span>⛏️</span> Normal Honest Mining
+                </button>
+                <button class="btn btn-danger" id="btnFiftyOneStep" onclick="nextFiftyOneStep()">
+                    <span>⚔️</span> Next Attack Step (<span id="fiftyOneStepIndicator">Step 1 of 4</span>)
+                </button>
+                <button class="btn btn-secondary" id="btnFiftyOneAuto" onclick="toggleAutoFiftyOne()">
+                    <span id="autoFiftyOneIcon">▶️</span> <span id="autoFiftyOneText">Auto-Play Attack</span>
+                </button>
+                <button class="btn btn-reset" onclick="reset51Sim()">
+                    <span>🔄</span> Reset 51% Demo
+                </button>
+            </div>
+
+            <!-- Terminal Event Logs Console -->
+            <div class="terminal-logs">
+                <div class="terminal-header">
+                    <span class="terminal-dot red"></span>
+                    <span class="terminal-dot yellow"></span>
+                    <span class="terminal-dot green"></span>
+                    <span class="terminal-title">51% Consensus Majority Log</span>
+                </div>
+                <div id="fiftyOneConsole" class="message terminal-body">
+                    Network consensus initialized. Honest miners hold 70% consensus power. Choose Normal Honest Mining or click Next Attack Step.
+                </div>
+            </div>
+
+            <!-- Explanation Grid -->
+            <div class="explanation-grid">
+                <div class="explanation">
+                    <h3>💡 Why Does a 51% Attack Work?</h3>
+                    <p>
+                        In Nakamoto consensus, distributed nodes obey the <strong>Longest Chain Rule</strong>. Nodes always trust the valid chain with the most accumulated Proof-of-Work. 
+                        If an attacker secretly acquires over 50% hashrate, they can produce blocks faster than the entire honest world combined. When they broadcast their longer chain, the network is mathematically forced to abandon the honest chain and reorganize!
+                    </p>
+                    <ul style="margin-top: 10px; padding-left: 20px; font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                        <li><strong>Chain Reorganization:</strong> Reverses recent confirmed transactions after off-chain goods are collected.</li>
+                        <li><strong>Transaction Censorship:</strong> Refuses to process transactions from targeted competitor addresses.</li>
+                        <li><em>Crucial Note: Cryptography is NOT broken; historical private keys remain secure.</em></li>
+                    </ul>
+                </div>
+                <div class="defense-card">
+                    <h3>🛡️ How Blockchains Defend Against 51% Attacks</h3>
+                    <ul class="defense-list">
+                        <li><strong>Massive Economic Scale:</strong> Bitcoin's hashrate (>600 EH/s) requires tens of billions of dollars in ASIC hardware and electrical power, making a 51% attack economically suicidal.</li>
+                        <li><strong>Validator Diversity:</strong> Geographic and institutional decentralization prevents mining cartels from coordinating.</li>
+                        <li><strong>Finality Checkpoints:</strong> Finality gadgets (e.g., Ethereum's Casper FFG) create irreversible 2-epoch checkpoints that cannot be reorganized under any circumstances.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- TAB 2: SYBIL ATTACK SIMULATION                      -->
+        <!-- ==================================================== -->
+        <section id="tab-sybil" class="tab-panel hidden">
+
+            <!-- ELI5 Everyday Metaphor Banner -->
+            <div class="eli5-banner">
+                <div class="eli5-icon">🎭</div>
+                <div class="eli5-content">
+                    <span class="eli5-tag">EXPLAIN LIKE I'M 5 (EVERYDAY ANALOGY)</span>
+                    <h3>The Free Ice Cream Disguise Trick</h3>
+                    <p>Imagine an ice cream shop giving away 1 free scoop per person. You have 4 honest kids in line. Suddenly, 1 sneaky kid puts on 6 different fake disguises—sunglasses, a pirate hat, a wig, a fake beard—and gets in line 6 times! To the cashier who only counts 'different faces', it looks like 6 new people. If the group votes on a flavor, that 1 kid casts 6 votes and overrules the 4 honest kids! In peer-to-peer networks, a Sybil attack happens when 1 computer creates dozens of fake digital identities to rig a vote.</p>
+                </div>
+            </div>
+
+            <div class="panel-header">
+                <div class="panel-info">
+                    <h2>👥 Sybil Attack — Fake Digital Identities Simulation</h2>
+                    <p>Demonstrating how a single adversary creates numerous pseudonymous nodes to usurp peer voting or routing.</p>
+                </div>
+                
+                <!-- Vulnerable vs Patched Toggle -->
+                <div class="mode-toggle-card">
+                    <span class="mode-label">Identity Defense Model:</span>
+                    <div class="segmented-control">
+                        <button id="sybilModeVuln" class="segment-btn active danger" onclick="setSybilMode('vulnerable')">
+                            ⚠️ Naive 1-IP-1-Vote (Vulnerable)
+                        </button>
+                        <button id="sybilModePatched" class="segment-btn safe" onclick="setSybilMode('patched')">
+                            🛡️ Proof-of-Stake / Cost (Secured)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard State Cards -->
+            <div class="dashboard">
+                <div class="box">
+                    <div class="box-tag">LEGITIMATE USERS</div>
+                    <h2>👤 Real Participants</h2>
+                    <div class="balance-display">
+                        <span class="label">Natural Humans</span>
+                        <h1 class="funds-val" id="sybilRealCount">4</h1>
+                        <p class="asset-sub">Alice, Bob, Charlie, David</p>
+                    </div>
+                    <p class="box-caption">1 Person = 1 Natural Voice</p>
+                </div>
+
+                <div class="box attacker-box" id="cardAttackerMaster">
+                    <div class="box-tag attack">PUPPET MASTER ADVERSARY</div>
+                    <h2>🦹 Single Attacker</h2>
+                    <div class="balance-display">
+                        <span class="label">Fake / Bot Identities</span>
+                        <h1 id="sybilFakeCount">0</h1>
+                        <p class="asset-sub" id="puppetLabel" style="display: none;">⚡ Puppet Control Wires Active</p>
+                    </div>
+                    <p class="box-caption">1 Laptop running multiple socket bots</p>
+                </div>
+
+                <div class="box">
+                    <div class="box-tag">VOTE CONTROL RATIO</div>
+                    <h2>⚖️ Governance Influence</h2>
+                    <div class="balance-display">
+                        <span class="label">Attacker Share</span>
+                        <h1 id="sybilInfluenceRatio">0%</h1>
+                    </div>
+                    <div class="status-indicator">
+                        <span class="status-pill safe" id="sybilStatusTag">Fair Consensus (100% Real)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simulation Interactive Canvas with SVG Puppet Wires -->
+            <div class="sybil-canvas-container">
+                <div class="sybil-network-stage" id="sybilNetworkStage">
+                    <svg class="sybil-svg-canvas" id="sybilSvgCanvas"></svg>
+
+                    <!-- Left: Real Participants -->
+                    <div class="sybil-column" id="colRealUsers">
+                        <h4 class="col-title">👤 Legitimate Participants (4)</h4>
+                        <div class="identities-grid">
+                            <div class="identity-card real">
+                                <span class="id-avatar">👩</span>
+                                <span class="id-name">Alice</span>
+                                <span class="id-tag">Honest Peer</span>
+                            </div>
+                            <div class="identity-card real">
+                                <span class="id-avatar">👨</span>
+                                <span class="id-name">Bob</span>
+                                <span class="id-tag">Honest Peer</span>
+                            </div>
+                            <div class="identity-card real">
+                                <span class="id-avatar">🧑</span>
+                                <span class="id-name">Charlie</span>
+                                <span class="id-tag">Honest Peer</span>
+                            </div>
+                            <div class="identity-card real">
+                                <span class="id-avatar">👴</span>
+                                <span class="id-name">David</span>
+                                <span class="id-tag">Honest Peer</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Center: The Adversary Mastermind -->
+                    <div class="sybil-column center-col">
+                        <h4 class="col-title">🕵️ Single Adversary</h4>
+                        <div class="attacker-master-card">
+                            <div class="master-avatar">🦹</div>
+                            <h3>1 Physical Attacker</h3>
+                            <p>Controlling multiple pseudonymous sockets from a single laptop</p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Bot / Fake Identities -->
+                    <div class="sybil-column" id="colFakeBots">
+                        <h4 class="col-title">🤖 Forged Pseudonymous Personas (<span id="fakeBotHeaderCount">0</span>)</h4>
+                        <div class="identities-grid" id="gridFakeBots">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Standard Control Panel -->
+            <div class="control-panel">
+                <button class="btn btn-primary" id="btnSybilNormal" onclick="normalSybilVote()">
+                    <span>👥</span> Run Fair Honest Vote
+                </button>
+                <button class="btn btn-danger" id="btnSybilStep" onclick="nextSybilStep()">
+                    <span>⚔️</span> Next Attack Step (<span id="sybilStepIndicator">Step 1 of 3</span>)
+                </button>
+                <button class="btn btn-secondary" id="btnSybilAuto" onclick="toggleAutoSybil()">
+                    <span id="autoSybilIcon">▶️</span> <span id="autoSybilText">Auto-Play Attack</span>
+                </button>
+                <button class="btn btn-reset" onclick="resetSybilSim()">
+                    <span>🔄</span> Reset Sybil Demo
+                </button>
+            </div>
+
+            <!-- Terminal Event Logs Console -->
+            <div class="terminal-logs">
+                <div class="terminal-header">
+                    <span class="terminal-dot red"></span>
+                    <span class="terminal-dot yellow"></span>
+                    <span class="terminal-dot green"></span>
+                    <span class="terminal-title">Sybil Network Identity Log</span>
+                </div>
+                <div id="sybilConsole" class="message terminal-body">
+                    Peer network initialized with 4 legitimate human participants. Each controls one natural identity. Choose Fair Vote or click Next Attack Step.
+                </div>
+            </div>
+
+            <!-- Explanation Grid -->
+            <div class="explanation-grid">
+                <div class="explanation">
+                    <h3>💡 Why Does a Sybil Attack Work?</h3>
+                    <p>
+                        In computer networks, creating a digital identity is essentially free: you can generate 10,000 public/private keypairs or spin up virtual IP sockets in seconds. 
+                        If a decentralized application naively allocates voting weight or peer routing based on <em>"one identity = one vote"</em>, an attacker can easily flood the network with fake personas and drown out honest participants.
+                    </p>
+                    <p style="margin-top: 10px; font-weight: 700; color: #fbbf24;">
+                        Core Takeaway: Identity count ≠ Independent human control!
+                    </p>
+                </div>
+                <div class="defense-card">
+                    <h3>🛡️ Four Core Sybil Defense Mechanisms</h3>
+                    <ul class="defense-list">
+                        <li><strong>Proof of Work (PoW):</strong> Ties voting weight to scarce physical energy and computation. Creating 1,000 IPs gives zero extra power without hardware.</li>
+                        <li><strong>Proof of Stake (PoS):</strong> Ties voting weight strictly to locked economic capital (ETH/tokens). Splitting 10 ETH into 1,000 wallets still equals 10 ETH.</li>
+                        <li><strong>Identity Verification:</strong> Proof-of-Humanity credentials, biometric zero-knowledge proofs, and web-of-trust social attestation.</li>
+                        <li><strong>Reputation Mechanisms:</strong> New accounts have zero authority; nodes gain network weight only after sustained honest uptime.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- TAB 3: DOUBLE SPENDING SIMULATION                   -->
+        <!-- ==================================================== -->
+        <section id="tab-doublespend" class="tab-panel hidden">
+
+            <!-- ELI5 Everyday Metaphor Banner -->
+            <div class="eli5-banner">
+                <div class="eli5-icon">💵</div>
+                <div class="eli5-content">
+                    <span class="eli5-tag">EXPLAIN LIKE I'M 5 (EVERYDAY ANALOGY)</span>
+                    <h3>The Teleporting $100 Bill</h3>
+                    <p>Imagine you have just one crisp $100 bill in your pocket. You hand it to a coffee shop cashier for a gift card. But before that cashier puts it in the cash drawer, you magically sprint across the street to a bookstore and hand the EXACT same $100 bill to another cashier for a textbook! Physical cash cannot be in two cash registers at once, but computer files can be easily copied and sent to two servers at the same instant. Double spending is attempting to buy two things with the same digital coin before the network realizes the trick!</p>
+                </div>
+            </div>
+
+            <div class="panel-header">
+                <div class="panel-info">
+                    <h2>🪙 Double Spending — Same Coin, Two Transactions</h2>
+                    <p>Demonstrating how conflicting transactions attempt to spend the same underlying digital asset twice.</p>
+                </div>
+                
+                <!-- Vulnerable vs Patched Toggle -->
+                <div class="mode-toggle-card">
+                    <span class="mode-label">Merchant Security Model:</span>
+                    <div class="segmented-control">
+                        <button id="dsModeVuln" class="segment-btn active danger" onclick="setDsMode('vulnerable')">
+                            ⚠️ 0-Conf Merchant (Vulnerable)
+                        </button>
+                        <button id="dsModePatched" class="segment-btn safe" onclick="setDsMode('patched')">
+                            🛡️ Confirmed Blocks (Secured)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard State Cards -->
+            <div class="dashboard">
+                <div class="box" id="chipAlice">
+                    <div class="box-tag">SENDER WALLET</div>
+                    <h2>👩 Alice</h2>
+                    <div class="balance-display">
+                        <span class="label">Coin Balance</span>
+                        <h1 class="funds-val" id="balAlice">🪙 1 COIN</h1>
+                        <p class="asset-sub">Input UTXO: <code>Coin #7492</code></p>
+                    </div>
+                    <p class="box-caption">Holder of the digital asset</p>
+                </div>
+
+                <div class="box" id="chipBob">
+                    <div class="box-tag">MERCHANT A (ONLINE STORE)</div>
+                    <h2>👨 Bob (Laptop Seller)</h2>
+                    <div class="balance-display">
+                        <span class="label">Received Payment</span>
+                        <h1 id="balBob">🪙 0 COINS</h1>
+                        <p class="asset-sub">Order: Gaming Laptop ($1,500)</p>
+                    </div>
+                    <div class="status-indicator">
+                        <span class="status-pill safe" id="statusBobGood">Waiting for Payment</span>
+                    </div>
+                </div>
+
+                <div class="box attacker-box" id="chipCharlie">
+                    <div class="box-tag attack">MERCHANT B (CONFLICTING CLAIM)</div>
+                    <h2>🧑 Charlie (Phone Seller)</h2>
+                    <div class="balance-display">
+                        <span class="label">Received Payment</span>
+                        <h1 id="balCharlie">🪙 0 COINS</h1>
+                        <p class="asset-sub">Order: Flagship Smartphone ($1,200)</p>
+                    </div>
+                    <div class="status-indicator">
+                        <span class="status-pill safe" id="statusCharlieGood">Waiting for Payment</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Double Spend Interactive Arena -->
+            <div class="ds-arena-box">
+                <div class="ds-stage" id="dsStage">
+                    <!-- Transactions Flow Container -->
+                    <div class="tx-cards-container">
+                        <!-- Transaction A -->
+                        <div class="tx-flow-card" id="cardTxA">
+                            <div class="tx-tag green">TRANSACTION A (TX-01)</div>
+                            <h4>Alice ➔ Bob</h4>
+                            <p class="tx-amt">Amount: <strong>🪙 1 Coin</strong></p>
+                            <p class="tx-input">Input UTXO: <code>Coin #7492</code></p>
+                            <span class="tx-status-pill" id="statusTxA">Ready</span>
+                        </div>
+
+                        <!-- VS or Conflicting Badge -->
+                        <div class="conflict-badge-wrap" id="conflictBadgeWrap" style="display: none;">
+                            <span class="conflict-badge">⚠️ CONFLICTING TRANSACTIONS</span>
+                            <p>Both transactions attempt to spend the exact same Coin #7492!</p>
+                        </div>
+
+                        <!-- Transaction B -->
+                        <div class="tx-flow-card" id="cardTxB" style="opacity: 0.5;">
+                            <div class="tx-tag orange">TRANSACTION B (TX-02)</div>
+                            <h4>Alice ➔ Charlie</h4>
+                            <p class="tx-amt">Amount: <strong>🪙 1 Coin</strong></p>
+                            <p class="tx-input">Input UTXO: <code>Coin #7492 (SAME COIN!)</code></p>
+                            <span class="tx-status-pill" id="statusTxB">Unbroadcasted</span>
+                        </div>
+                    </div>
+
+                    <!-- Blockchain Mempool & Consensus Block -->
+                    <div class="blockchain-validation-zone">
+                        <div class="zone-header">
+                            <span>⛓️ DECENTRALIZED CONSENSUS ENGINE</span>
+                            <span id="consensusPhase">Mempool Waiting</span>
+                        </div>
+                        <div class="block-mint-area" id="blockMintArea">
+                            <div class="candidate-block" id="candidateBlock">
+                                <span class="c-title">Pending Block #502</span>
+                                <div class="c-tx-slot" id="blockTxSlot">
+                                    <span class="empty-slot-text">[Waiting for Consensus Confirmation...]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Standard Control Panel -->
+            <div class="control-panel">
+                <button class="btn btn-primary" id="btnDsNormal" onclick="normalPaymentDS()">
+                    <span>✅</span> Normal Payment (Pay Bob)
+                </button>
+                <button class="btn btn-danger" id="btnDsStep" onclick="nextDsStep()">
+                    <span>⚔️</span> Next Attack Step (<span id="dsStepIndicator">Step 1 of 3</span>)
+                </button>
+                <button class="btn btn-secondary" id="btnDsAuto" onclick="toggleAutoDs()">
+                    <span id="autoDsIcon">▶️</span> <span id="autoDsText">Auto-Play Attack</span>
+                </button>
+                <button class="btn btn-reset" onclick="resetDSDemo()">
+                    <span>🔄</span> Reset Double Spend Demo
+                </button>
+            </div>
+
+            <!-- Terminal Event Logs Console -->
+            <div class="terminal-logs">
+                <div class="terminal-header">
+                    <span class="terminal-dot red"></span>
+                    <span class="terminal-dot yellow"></span>
+                    <span class="terminal-dot green"></span>
+                    <span class="terminal-title">Double Spend Consensus Log</span>
+                </div>
+                <div id="dsConsole" class="message terminal-body">
+                    Ledger consistent. Alice possesses 1 coin (Coin #7492). Choose Normal Payment or click Next Attack Step.
+                </div>
+            </div>
+
+            <!-- Explanation Grid -->
+            <div class="explanation-grid">
+                <div class="explanation">
+                    <h3>💡 Why Does Double Spending Happen in Digital Assets?</h3>
+                    <p>
+                        In the physical world, a paper dollar or gold coin cannot exist in two places at once. But digital data is just a sequence of bits that can be infinitely duplicated and broadcasted to multiple nodes at the same fraction of a second.
+                    </p>
+                    <p style="margin-top: 10px; font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                        If merchants deliver goods before waiting for block confirmations (known as <strong>0-confirmation acceptance</strong>), an attacker can easily broadcast a conflicting transaction with a higher fee to re-claim the coin back to their own wallet!
+                    </p>
+                </div>
+                <div class="defense-card">
+                    <h3>🛡️ Three Pillars of Double-Spend Prevention</h3>
+                    <ul class="defense-list">
+                        <li><strong>Distributed Consensus Ordering:</strong> Proof-of-Work and Proof-of-Stake establish a single, globally ordered transaction history that all nodes deterministically agree on.</li>
+                        <li><strong>UTXO Input Validation:</strong> Every validator independently verifies that the input coin has never been marked spent in the ledger before accepting a block.</li>
+                        <li><strong>Confirmation Depth & Finality:</strong> Merchants wait for multiple block confirmations (e.g. 6 blocks on Bitcoin) before shipping goods, making retroactive reorganization exponentially impossible.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- TAB 4: THE DAO REENTRANCY ATTACK SIMULATION         -->
+        <!-- ==================================================== -->
+        <section id="tab-dao" class="tab-panel hidden">
+
             <!-- ELI5 Everyday Metaphor Banner -->
             <div class="eli5-banner">
                 <div class="eli5-icon">🏧</div>
@@ -107,7 +917,7 @@
             <div class="panel-header">
                 <div class="panel-info">
                     <h2>🔴 The DAO Reentrancy Attack (2016)</h2>
-                    <p>Smart Contract Call-Stack Interception & State Update Flaw ($60M Historic Drain)</p>
+                    <p>Demonstrating how a vulnerable withdrawal function is repeatedly called before its balance update completes.</p>
                 </div>
                 
                 <!-- Vulnerable vs Prevention Toggle -->
@@ -121,6 +931,21 @@
                             🛡️ Patched (Checks-Effects-Interactions)
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Execution Flow Pipeline -->
+            <div class="flow-pipeline-container">
+                <span class="flow-title">Contract Execution Order:</span>
+                <div class="pipeline-steps" id="daoPipelineSteps">
+                    <div class="pipe-step" id="pipeCheck">1. CHECK BALANCE</div>
+                    <div class="pipe-arrow">➔</div>
+                    <div class="pipe-step vuln-highlight" id="pipeSend">2. SEND ETH (External Call) ⚠️</div>
+                    <div class="pipe-arrow">➔</div>
+                    <div class="pipe-step" id="pipeUpdate">3. UPDATE BALANCE (Storage)</div>
+                </div>
+                <div class="pipeline-caption" id="daoPipelineCaption">
+                    ⚠️ Vulnerable Order: External interaction occurs BEFORE internal storage state is updated!
                 </div>
             </div>
 
@@ -148,14 +973,15 @@
                             <h1 id="attackerBalance">10 ETH</h1>
                         </div>
                         <div class="stat-item highlight">
-                            <span class="label">ETH Stolen / Received</span>
+                            <span class="label">Stolen / Received</span>
                             <h1 id="attackerReceived">0 ETH</h1>
                         </div>
                     </div>
-                    <div class="reentrancy-depth">
-                        <span>Recursion Depth:</span>
-                        <span id="reentrancyDepthBadge" class="badge-depth">Depth: 0 (Idle)</span>
+                    <div class="call-depth-indicator">
+                        <span class="label">EVM Call Stack Depth:</span>
+                        <span id="callDepthValue" class="depth-badge">Depth 0</span>
                     </div>
+                    <p class="box-caption" id="daoAttackerStatus">Status: Honest Depositor</p>
                 </div>
 
                 <!-- Call Stack Visualizer -->
@@ -168,85 +994,86 @@
                 </div>
             </div>
 
-            <!-- Flow Visual Diagram -->
-            <div class="flow-container">
-                <div class="flow-header">
-                    <span>Transaction Execution Pipeline</span>
-                    <span id="flowModeBadge" class="flow-badge vuln">Mode: Vulnerable (Send before State Update)</span>
-                </div>
-                <div class="flow" id="daoFlowGraph">
-                    <div class="node" id="nodeAttacker">
-                        <span class="node-icon">👤</span>
-                        <span class="node-title">Attacker Contract</span>
-                        <span class="node-sub">msg.sender</span>
-                    </div>
-                    <div class="arrow" id="arrow1">➔<span class="arrow-label">withdraw()</span></div>
-                    
-                    <div class="node" id="nodeCheck">
-                        <span class="node-icon">🔍</span>
-                        <span class="node-title">1. Check Balance</span>
-                        <span class="node-sub">require(bal &gt; 0)</span>
-                    </div>
-                    <div class="arrow" id="arrow2">➔</div>
-
-                    <div class="node" id="nodeAction1">
-                        <span class="node-icon" id="action1Icon">💰</span>
-                        <span class="node-title" id="action1Title">2. Send ETH</span>
-                        <span class="node-sub" id="action1Sub">msg.sender.call{value}</span>
-                    </div>
-                    <div class="arrow" id="arrow3">➔</div>
-
-                    <div class="node" id="nodeAction2">
-                        <span class="node-icon" id="action2Icon">📝</span>
-                        <span class="node-title" id="action2Title">3. Update Balance</span>
-                        <span class="node-sub" id="action2Sub">balances[sender] = 0</span>
+            <!-- Interactive Exploit Step Area with Curved Reentrancy Arrow -->
+            <div class="reentrancy-stage-card">
+                <div class="reentrancy-visual-flow">
+                    <div class="actor-card" id="actorAttacker">
+                        <div class="a-icon">🦹</div>
+                        <h4>Attacker Contract</h4>
+                        <div class="a-sub"><code>fallback() { withdraw(); }</code></div>
                     </div>
 
-                    <div class="arrow reenter-arrow" id="arrowReenter">
-                        <div class="reenter-loop">
-                            <span class="reenter-text">⚠️ Recursive fallback() Re-enters withdraw()</span>
-                            <span class="reenter-icon">↺</span>
+                    <div class="reentry-arrow-zone">
+                        <div class="straight-call" id="callArrow1">
+                            <span>1. withdraw()</span>
+                            <span class="arrow-anim">➔</span>
+                        </div>
+                        <div class="curved-reenter" id="reenterArrow" style="display: none;">
+                            <span class="curved-label">🔄 RE-ENTER withdraw() AGAIN!</span>
+                            <div class="curved-line"></div>
                         </div>
                     </div>
+
+                    <div class="actor-card" id="actorDAO">
+                        <div class="a-icon">🏦</div>
+                        <h4>DAO Contract</h4>
+                        <div class="a-sub"><code>withdraw()</code></div>
+                    </div>
+                </div>
+
+                <div class="step-narration-banner" id="daoStepBanner">
+                    <span class="banner-step-num">READY</span>
+                    <span class="banner-step-text">Click "Start Reentrancy Attack" to begin stepping through the exploit.</span>
+                </div>
+
+                <!-- Simulation Buttons -->
+                <div class="control-panel">
+                    <button class="btn btn-primary" id="btnNormalWithdraw" onclick="normalWithdrawal()">
+                        <span>👤</span> Normal Withdrawal
+                    </button>
+                    <button class="btn btn-danger" id="btnAttackStep" onclick="attackStep()">
+                        <span>⚔️</span> Next Attack Step
+                    </button>
+                    <button class="btn btn-secondary" id="btnAutoAttack" onclick="toggleAutoDaoAttack()">
+                        <span id="autoDaoIcon">▶️</span> <span id="autoDaoText">Auto-Play Attack</span>
+                    </button>
+                    <button class="btn btn-reset" onclick="resetDemo()">
+                        <span>🔄</span> Reset Demo
+                    </button>
+                    <button class="pill-btn highlight-gold" onclick="toggleSpeakerNotes()">
+                        <span>🎙️</span> Presenter Script
+                    </button>
                 </div>
             </div>
 
-            <!-- Control Buttons -->
-            <div class="control-panel">
-                <button class="btn btn-primary" id="btnNormalWithdraw" onclick="normalWithdrawal()">
-                    <span>👤</span> Normal Withdrawal
-                </button>
-                <button class="btn btn-danger" id="btnAttackStep" onclick="attackStep()">
-                    <span>⚔️</span> Next Attack Step
-                </button>
-                <button class="btn btn-secondary" id="btnAutoAttack" onclick="toggleAutoDaoAttack()">
-                    <span id="autoDaoIcon">▶️</span> <span id="autoDaoText">Auto-Play Attack</span>
-                </button>
-                <button class="btn btn-reset" onclick="resetDemo()">
-                    <span>🔄</span> Reset Demo
-                </button>
-            </div>
-
-            <!-- Live Status & Explanation Cards -->
+            <!-- Terminal Console Logs -->
             <div class="terminal-logs">
                 <div class="terminal-header">
                     <span class="terminal-dot red"></span>
                     <span class="terminal-dot yellow"></span>
                     <span class="terminal-dot green"></span>
-                    <span class="terminal-title">Simulation Event Console</span>
+                    <span class="terminal-title">The DAO Simulation Event Console</span>
                 </div>
                 <div id="message" class="message terminal-body">
                     Ready to start the demonstration. Choose Normal Withdrawal or click Next Attack Step.
                 </div>
             </div>
 
+            <!-- "Why Did This Work?" Educational Callout & Solidity Compare -->
             <div class="explanation-grid">
                 <div class="explanation">
-                    <h3>💡 Why Does the Attack Work?</h3>
+                    <h3>💡 Why Did This Attack Work?</h3>
                     <p id="explanationText">
                         The vulnerable contract sends ETH to the caller <strong>before</strong> updating the caller's recorded balance to 0. 
                         When the attacker's fallback function receives the ETH, it intercepts control flow and calls <code>withdraw()</code> again.
                     </p>
+                    <ul style="margin-top: 10px; padding-left: 20px; font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                        <li>1. Contract sent ETH via external call.</li>
+                        <li>2. External attacker fallback code executed.</li>
+                        <li>3. Attacker called <code>withdraw()</code> again.</li>
+                        <li>4. Original balance had not been decremented in storage.</li>
+                        <li>5. Contract accepted repeated withdrawal until drained.</li>
+                    </ul>
                 </div>
                 <div class="code-compare-card">
                     <div class="code-header">
@@ -270,12 +1097,11 @@ function withdraw() public {
 
         </section>
 
-
         <!-- ==================================================== -->
-        <!-- TAB 2: RONIN BRIDGE VALIDATOR MULTI-SIG HACK        -->
+        <!-- TAB 5: RONIN BRIDGE VALIDATOR QUORUM ATTACK         -->
         <!-- ==================================================== -->
         <section id="tab-ronin" class="tab-panel hidden">
-            
+
             <!-- ELI5 Everyday Metaphor Banner -->
             <div class="eli5-banner">
                 <div class="eli5-icon">🔐</div>
@@ -289,7 +1115,7 @@ function withdraw() public {
             <div class="panel-header">
                 <div class="panel-info">
                     <h2>🌉 Ronin Bridge Multi-Sig Compromise ($625M)</h2>
-                    <p>Demonstrates how social engineering compromised 5 of 9 cryptographic validator private keys to open the vault door.</p>
+                    <p>Demonstrating how multi-sig threshold quorum compromise allows unauthorized cross-chain bridge withdrawals.</p>
                 </div>
 
                 <div class="mode-toggle-card">
@@ -305,7 +1131,37 @@ function withdraw() public {
                 </div>
             </div>
 
-            <!-- Bridge Dashboard -->
+            <!-- Bridge Architecture Flow -->
+            <div class="bridge-arch-container">
+                <div class="arch-chain-box">
+                    <span class="chain-icon">⛓️</span>
+                    <h4>BLOCKCHAIN A</h4>
+                    <p>Ethereum Mainnet</p>
+                    <span class="vault-tag">Locked Liquidity: $625M</span>
+                </div>
+
+                <div class="arch-bridge-middle">
+                    <div class="bridge-badge">🌉 CROSS-CHAIN BRIDGE</div>
+                    <div class="quorum-meter-wrap">
+                        <div class="quorum-labels">
+                            <span>Compromised Signatures: <strong id="roninSigCount">0</strong> / 9</span>
+                            <span>Required Quorum: <strong id="roninThresholdLabel">5 / 9</strong></span>
+                        </div>
+                        <div class="quorum-progress">
+                            <div id="roninProgressBar" class="quorum-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="arch-chain-box">
+                    <span class="chain-icon">⚔️</span>
+                    <h4>BLOCKCHAIN B</h4>
+                    <p>Ronin Sidechain</p>
+                    <span class="vault-tag">Gaming Ecosystem</span>
+                </div>
+            </div>
+
+            <!-- Bridge Dashboard & Vault Door -->
             <div class="dashboard">
                 <div class="box vault-box" id="roninVaultCard">
                     <div class="box-tag">ETHEREUM BRIDGE VAULT</div>
@@ -331,7 +1187,7 @@ function withdraw() public {
                     </div>
                     <div class="threshold-display">
                         <span id="roninSignatureCount" class="sig-huge">0 / 5</span>
-                        <span id="roninThresholdLabel" class="sig-label">Keys Turned to Open Vault</span>
+                        <span class="sig-label">Keys Turned to Open Vault</span>
                     </div>
                     <div class="sig-progress-bar">
                         <div id="roninSigBar" class="sig-fill" style="width: 0%;"></div>
@@ -352,19 +1208,18 @@ function withdraw() public {
                 </div>
             </div>
 
-            <!-- Interactive Validator Keyholes Cluster -->
+            <!-- 9 Validator Nodes Grid -->
             <div class="validator-map-card">
                 <div class="validator-map-header">
-                    <h3>🗝️ The 9 Validator Keys (Turn 5 to Open)</h3>
+                    <h3>🗝️ Validator Multi-Sig Keys</h3>
                     <span class="map-badge" id="validatorSummaryBadge">9 Total Keys (4 Sky Mavis, 1 Axie DAO, 4 External)</span>
                 </div>
-                
                 <div class="validators-grid" id="validatorsGrid">
                     <!-- Validator nodes generated by JS -->
                 </div>
             </div>
 
-            <!-- Action Controls -->
+            <!-- Controls -->
             <div class="control-panel">
                 <button class="btn btn-danger" id="btnRoninStep" onclick="nextRoninStep()">
                     <span>🎯</span> Next Attack Step (<span id="roninStepIndicator">Step 1 of 5</span>)
@@ -403,21 +1258,20 @@ function withdraw() public {
                     <h3>🛡️ How Bridges Are Secured Today</h3>
                     <ul class="defense-list">
                         <li><strong>Higher Quorum:</strong> Require 11-of-15 or 16-of-21 across diverse independent entities.</li>
-                        <li><strong>Withdrawal Timelocks:</strong> Any withdrawal over $100k undergoes a 48-hour delay for human and automated review.</li>
+                        <li><strong>Withdrawal Timelocks:</strong> Any withdrawal over $100k undergoes a 48-hour delay for review.</li>
                         <li><strong>Circuit Breakers:</strong> Automated rate-limiting contracts that halt transfers if sudden spikes occur.</li>
-                        <li><strong>Multi-Party Computation (MPC):</strong> Private keys are split into secret shares and kept in Hardware Security Modules (HSMs).</li>
+                        <li><strong>Multi-Party Computation (MPC):</strong> Private keys kept in Hardware Security Modules (HSMs).</li>
                     </ul>
                 </div>
             </div>
 
         </section>
 
-
         <!-- ==================================================== -->
-        <!-- TAB 3: SMART CONTRACT BUGS (UNDERFLOW & ACCESS)     -->
+        <!-- TAB 6: SMART CONTRACT BUGS (UNDERFLOW & ACCESS)     -->
         <!-- ==================================================== -->
         <section id="tab-bugs" class="tab-panel hidden">
-            
+
             <!-- ELI5 Everyday Metaphor Banner -->
             <div class="eli5-banner">
                 <div class="eli5-icon">🚗</div>
@@ -431,8 +1285,8 @@ function withdraw() public {
 
             <div class="panel-header">
                 <div class="panel-info">
-                    <h2>🐛 Smart Contract Bugs</h2>
-                    <p>Explore the two most common logic flaws in smart contracts: Integer Underflows and Broken Access Control.</p>
+                    <h2>🐛 Smart Contract Bugs — Vulnerable vs Protected</h2>
+                    <p>Explore three core contract vulnerabilities: Integer Underflow, Missing Access Control, and Side-by-Side CEI reentrancy comparison.</p>
                 </div>
 
                 <!-- Sub-bug Switcher -->
@@ -443,10 +1297,13 @@ function withdraw() public {
                     <button id="btnSubBugAccess" class="sub-bug-btn" onclick="switchSubBug('access')">
                         <span>👑 Bug B: Missing Access Control (onlyOwner)</span>
                     </button>
+                    <button id="btnSubBugCEI" class="sub-bug-btn" onclick="switchSubBug('cei')">
+                        <span>⚖️ Bug C: Side-by-Side CEI Comparison</span>
+                    </button>
                 </div>
 
                 <!-- Vulnerable vs Patched Toggle -->
-                <div class="mode-toggle-card">
+                <div class="mode-toggle-card" id="bugDefenseModeCard">
                     <span class="mode-label">Bug Defense Mode:</span>
                     <div class="segmented-control">
                         <button id="bugModeVuln" class="segment-btn active danger" onclick="setBugMode('vulnerable')">
@@ -458,7 +1315,6 @@ function withdraw() public {
                     </div>
                 </div>
             </div>
-
 
             <!-- SUB-BUG 1: INTEGER UNDERFLOW VIEW -->
             <div id="subBugUnderflowView" class="sub-bug-view">
@@ -520,7 +1376,6 @@ function withdraw() public {
                 </div>
             </div>
 
-
             <!-- SUB-BUG 2: MISSING ACCESS CONTROL VIEW -->
             <div id="subBugAccessView" class="sub-bug-view hidden">
                 <div class="dashboard">
@@ -580,9 +1435,89 @@ function withdraw() public {
                 </div>
             </div>
 
+            <!-- SUB-BUG 3: SIDE-BY-SIDE CEI COMPARISON VIEW -->
+            <div id="subBugCEIView" class="sub-bug-view hidden">
+                <div class="side-by-side-grid">
+                    <!-- Left: Vulnerable Contract -->
+                    <div class="comparison-column vuln-side">
+                        <div class="column-header danger">
+                            <span class="col-badge">❌ VULNERABLE CONTRACT</span>
+                            <h3>State Update AFTER Transfer</h3>
+                        </div>
+
+                        <div class="flow-box">
+                            <div class="flow-pill normal">1. CHECK BALANCE</div>
+                            <div class="flow-arrow-down">↓</div>
+                            <div class="flow-pill danger pulse-border" id="vulnSendPill">
+                                2. SEND MONEY (External Call) ⚠️
+                            </div>
+                            <div class="flow-arrow-down">↓</div>
+                            <div class="flow-pill normal">3. UPDATE BALANCE (Storage)</div>
+                        </div>
+
+                        <div class="code-editor-sim">
+                            <div class="code-title">Solidity (Vulnerable)</div>
+                            <pre><code><span class="kw">function</span> <span class="fn">withdraw</span>() <span class="kw">public</span> {
+    <span class="kw">require</span>(balances[msg.sender] &gt; 0);
+    
+    <span class="comment">// ❌ CRITICAL BUG: Call before balance update</span>
+    msg.sender.<span class="fn">call</span>{value: amount}(<span class="str">""</span>);
+    
+    balances[msg.sender] = 0;
+}</code></pre>
+                        </div>
+
+                        <div class="sim-output-box" id="vulnOutputBox">
+                            <span class="box-status-tag red">ATTACK SUCCEEDS</span>
+                            <p id="vulnSimText">External fallback calls <code>withdraw()</code> recursively. Vault is drained!</p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Protected Contract -->
+                    <div class="comparison-column safe-side">
+                        <div class="column-header safe">
+                            <span class="col-badge">✅ PROTECTED CONTRACT</span>
+                            <h3>Checks-Effects-Interactions (CEI)</h3>
+                        </div>
+
+                        <div class="flow-box">
+                            <div class="flow-pill normal">1. CHECK BALANCE</div>
+                            <div class="flow-arrow-down">↓</div>
+                            <div class="flow-pill safe" id="safeUpdatePill">
+                                2. UPDATE BALANCE (Storage First!) 🛡️
+                            </div>
+                            <div class="flow-arrow-down">↓</div>
+                            <div class="flow-pill normal">3. SEND MONEY (External Call Last)</div>
+                        </div>
+
+                        <div class="code-editor-sim">
+                            <div class="code-title">Solidity (Protected)</div>
+                            <pre><code><span class="kw">function</span> <span class="fn">withdraw</span>() <span class="kw">public</span> <span class="hl-green">nonReentrant</span> {
+    <span class="kw">require</span>(balances[msg.sender] &gt; 0);
+    
+    <span class="comment">// ✅ SECURE: Balance updated FIRST</span>
+    balances[msg.sender] = 0;
+    
+    (bool s, ) = msg.sender.<span class="fn">call</span>{value: amount}(<span class="str">""</span>);
+    <span class="kw">require</span>(s);
+}</code></pre>
+                        </div>
+
+                        <div class="sim-output-box safe-box" id="safeOutputBox">
+                            <span class="box-status-tag green">ATTACK BLOCKED</span>
+                            <p id="safeSimText">Balance is already 0. Reentrant call triggers <code>require()</code> revert!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-btn-row centered" style="margin-top: 20px;">
+                    <button class="attack-btn pulse-glow" onclick="runDualAttackSim()">⚔️ Run Attack on Both Versions Simultaneously</button>
+                    <button class="ghost-btn" onclick="resetDualAttackSim()">🔄 Reset Comparison</button>
+                </div>
+            </div>
 
             <!-- Terminal Log for Bugs -->
-            <div class="terminal-logs">
+            <div class="terminal-logs" id="bugTerminalLogs">
                 <div class="terminal-header">
                     <span class="terminal-dot red"></span>
                     <span class="terminal-dot yellow"></span>
@@ -595,11 +1530,11 @@ function withdraw() public {
             </div>
 
             <!-- Code Comparison for Bugs -->
-            <div class="explanation-grid">
+            <div class="explanation-grid" id="bugExplanationGrid">
                 <div class="explanation">
                     <h3 id="bugExplainTitle">💡 Why Does the Underflow Bug Happen?</h3>
                     <p id="bugExplainText">
-                        In programming, an unsigned 256-bit integer (<code>uint256</code>) cannot represent negative numbers. It can only store values between <code>0</code> and $2^{256}-1$. 
+                        In programming, an unsigned 256-bit integer (<code>uint256</code>) cannot represent negative numbers. It can only store values between <code>0</code> and 2^256-1. 
                         When you subtract <code>1</code> from <code>0</code> without safety checks, the computer wraps backward to the maximum possible number—giving the attacker an astronomical fortune!
                     </p>
                 </div>
@@ -619,82 +1554,218 @@ function transfer(address to, uint256 amount) public {
 
         </section>
 
-
         <!-- ==================================================== -->
-        <!-- TAB 4: CLASSROOM QUIZ & DEFENSE PLAYGROUND          -->
+        <!-- TAB 7: PREVENTION MATRIX (DEFENSE IN DEPTH)         -->
         <!-- ==================================================== -->
-        <section id="tab-quiz" class="tab-panel hidden">
-            
-            <!-- ELI5 Everyday Metaphor Banner -->
-            <div class="eli5-banner">
-                <div class="eli5-icon">🎓</div>
-                <div class="eli5-content">
-                    <span class="eli5-tag">CLASSROOM ENGAGEMENT</span>
-                    <h3>Test Your Classmates' Knowledge!</h3>
-                    <p>Use these interactive questions during your presentation to engage your professor and classmates. Click an answer to see instant feedback and clear explanations.</p>
-                </div>
-            </div>
+        <section id="tab-prevention" class="tab-panel hidden">
 
             <div class="panel-header">
                 <div class="panel-info">
-                    <h2>🎓 Classroom Defense Quiz</h2>
-                    <p>Instant evaluation for students on Reentrancy, Multi-Sig governance, and Smart Contract Bugs.</p>
+                    <h2>🛡️ Comprehensive Blockchain Prevention Matrix</h2>
+                    <p>Comparing attack vectors, root weaknesses, and production-grade security countermeasures. Click any row to jump to its simulation.</p>
+                </div>
+            </div>
+
+            <!-- Interactive Security Matrix Table -->
+            <div class="table-container">
+                <table class="security-matrix-table">
+                    <thead>
+                        <tr>
+                            <th>Attack Vector</th>
+                            <th>Target Layer</th>
+                            <th>Main Security Weakness</th>
+                            <th>Primary Prevention & Defenses</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr onclick="switchLabTab('fiftyone')" class="clickable-row">
+                            <td><strong>⛏️ 51% Attack</strong></td>
+                            <td>Consensus</td>
+                            <td>Attacker obtains majority hashrate/stake to reorg recent blocks</td>
+                            <td>High economic attack cost, validator diversity, finality checkpoints (Casper)</td>
+                            <td><span class="tbl-launch-btn">Test 51% →</span></td>
+                        </tr>
+                        <tr onclick="switchLabTab('sybil')" class="clickable-row">
+                            <td><strong>👥 Sybil Attack</strong></td>
+                            <td>Network / Identity</td>
+                            <td>Creating unlimited fake personas in naive identity-counting schemes</td>
+                            <td>Proof of Work (energy cost), Proof of Stake (capital cost), KYC/reputation</td>
+                            <td><span class="tbl-launch-btn">Test Sybil →</span></td>
+                        </tr>
+                        <tr onclick="switchLabTab('doublespend')" class="clickable-row">
+                            <td><strong>🪙 Double Spending</strong></td>
+                            <td>Ledger / Transaction</td>
+                            <td>Broadcasting conflicting transactions spending the same coin twice</td>
+                            <td>Decentralized consensus ordering, input UTXO validation, block confirmation depth</td>
+                            <td><span class="tbl-launch-btn">Test Double Spend →</span></td>
+                        </tr>
+                        <tr onclick="switchLabTab('dao')" class="clickable-row">
+                            <td><strong>🔴 The DAO Reentrancy</strong></td>
+                            <td>Smart Contract Logic</td>
+                            <td>External call hands control before storage balance is updated</td>
+                            <td>Checks-Effects-Interactions (CEI) pattern, OpenZeppelin <code>nonReentrant</code> mutex</td>
+                            <td><span class="tbl-launch-btn">Test DAO →</span></td>
+                        </tr>
+                        <tr onclick="switchLabTab('ronin')" class="clickable-row">
+                            <td><strong>🌉 Ronin Bridge Hack</strong></td>
+                            <td>Multi-Sig / Keys</td>
+                            <td>5/9 validator key compromise through phishing & stale RPC whitelist</td>
+                            <td>Multi-party computation (MPC), 9/11 threshold, 24h timelocks, anomaly circuit breakers</td>
+                            <td><span class="tbl-launch-btn">Test Bridge →</span></td>
+                        </tr>
+                        <tr onclick="switchLabTab('bugs')" class="clickable-row">
+                            <td><strong>🐛 Smart Contract Bugs</strong></td>
+                            <td>Code / Access Control</td>
+                            <td>Underflow arithmetic, missing onlyOwner modifier, call-order bugs</td>
+                            <td>Solidity 0.8+ checked math, OpenZeppelin Ownable, auditing, formal verification</td>
+                            <td><span class="tbl-launch-btn">Test Bugs →</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Deep-Dive Cards Grid -->
+            <div class="prevention-deep-grid">
+                <div class="prev-box">
+                    <div class="prev-icon">🧠</div>
+                    <h4>Formal Verification & Auditing</h4>
+                    <p>Mathematical proof checking that contract bytecode mathematically adheres to strict formal specifications, identifying logical edge cases before mainnet deployment.</p>
+                </div>
+                <div class="prev-box">
+                    <div class="prev-icon">🔐</div>
+                    <h4>Hardware Security Modules (HSM)</h4>
+                    <p>Validator private keys should never sit on internet-connected engineer workstations. Keys must reside inside air-gapped cryptographic hardware security modules.</p>
+                </div>
+                <div class="prev-box">
+                    <div class="prev-icon">⏳</div>
+                    <h4>Timelocks & Multisig Governance</h4>
+                    <p>High-value treasury withdrawals and contract upgrades should require multi-party approval and enforce a mandatory 48-hour delay for community review.</p>
+                </div>
+                <div class="prev-box">
+                    <div class="prev-icon">🚨</div>
+                    <h4>Real-Time Threat Monitoring</h4>
+                    <p>Off-chain telemetry and circuit breakers (e.g. Forta Network) monitor abnormal volume or flash-loan spikes, automatically pausing contracts before vaults drain.</p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================================================== -->
+        <!-- TAB 8: CLASSROOM QUICK QUIZ                         -->
+        <!-- ==================================================== -->
+        <section id="tab-quiz" class="tab-panel hidden">
+
+            <div class="panel-header">
+                <div class="panel-info">
+                    <h2>🎓 Classroom & Viva Quick Quiz</h2>
+                    <p>Interactive test of root causes, consensus principles, and smart contract defense patterns.</p>
+                </div>
+                <div class="quiz-score-badge">
+                    Score: <span id="quizScore">0</span> / 6
                 </div>
             </div>
 
             <div class="quiz-container">
+                <!-- Q1 -->
                 <div class="quiz-card" id="quizCard1">
-                    <div class="quiz-header">
-                        <span class="quiz-badge">Question 1 of 3</span>
-                        <h3>How does the "Checks-Effects-Interactions" pattern stop the DAO Reentrancy exploit?</h3>
-                    </div>
+                    <span class="q-tag">QUESTION 1 • 51% ATTACK</span>
+                    <h3>What can an attacker with 51% consensus power actually do?</h3>
                     <div class="quiz-options">
-                        <button class="quiz-opt" onclick="checkQuiz(1, 0)">A) It encrypts the user's transaction with RSA-2048</button>
-                        <button class="quiz-opt" onclick="checkQuiz(1, 1)">B) It changes the user's recorded balance to 0 BEFORE sending the ETH</button>
-                        <button class="quiz-opt" onclick="checkQuiz(1, 2)">C) It bans smart contracts from sending cryptocurrency</button>
-                        <button class="quiz-opt" onclick="checkQuiz(1, 3)">D) It requires waiting 24 hours for proof-of-work confirmation</button>
+                        <button class="quiz-opt" onclick="answerQuiz(1, 0)">A) Steal everyone's private keys and decrypt passwords</button>
+                        <button class="quiz-opt" onclick="answerQuiz(1, 1)">B) Reverse recent transactions (reorg) and censor blocks</button>
+                        <button class="quiz-opt" onclick="answerQuiz(1, 2)">C) Create unlimited free coins out of thin air</button>
+                        <button class="quiz-opt" onclick="answerQuiz(1, 3)">D) Alter transactions confirmed 10 years ago with zero cost</button>
                     </div>
-                    <div class="quiz-feedback hidden" id="quizFeedback1"></div>
+                    <div class="quiz-feedback hidden" id="qFeedback1"></div>
                 </div>
 
+                <!-- Q2 -->
                 <div class="quiz-card" id="quizCard2">
-                    <div class="quiz-header">
-                        <span class="quiz-badge">Question 2 of 3</span>
-                        <h3>What was the real root cause of the $625M Ronin Bridge hack?</h3>
-                    </div>
+                    <span class="q-tag">QUESTION 2 • SYBIL ATTACK</span>
+                    <h3>How does Proof-of-Work (PoW) defend against Sybil attacks?</h3>
                     <div class="quiz-options">
-                        <button class="quiz-opt" onclick="checkQuiz(2, 0)">A) A mathematical overflow in the Solidity bridge contract</button>
-                        <button class="quiz-opt" onclick="checkQuiz(2, 1)">B) A 51% mining attack on the Ethereum network</button>
-                        <button class="quiz-opt" onclick="checkQuiz(2, 2)">C) Phishing and poor key storage allowing the compromise of 5 out of 9 validator private keys</button>
-                        <button class="quiz-opt" onclick="checkQuiz(2, 3)">D) The price of Axie Infinity falling to zero</button>
+                        <button class="quiz-opt" onclick="answerQuiz(2, 0)">A) By requiring every user to upload government passport KYC</button>
+                        <button class="quiz-opt" onclick="answerQuiz(2, 1)">B) By limiting the network to only 100 participants worldwide</button>
+                        <button class="quiz-opt" onclick="answerQuiz(2, 2)">C) By tying voting power to scarce physical energy and hardware, making fake identities meaningless</button>
+                        <button class="quiz-opt" onclick="answerQuiz(2, 3)">D) By banning all anonymous IP addresses</button>
                     </div>
-                    <div class="quiz-feedback hidden" id="quizFeedback2"></div>
+                    <div class="quiz-feedback hidden" id="qFeedback2"></div>
                 </div>
 
+                <!-- Q3 -->
                 <div class="quiz-card" id="quizCard3">
-                    <div class="quiz-header">
-                        <span class="quiz-badge">Question 3 of 3</span>
-                        <h3>How does Solidity 0.8+ solve the "Odometer" Integer Underflow bug?</h3>
-                    </div>
+                    <span class="q-tag">QUESTION 3 • DOUBLE SPENDING</span>
+                    <h3>How does a blockchain prevent a user from spending the same coin twice?</h3>
                     <div class="quiz-options">
-                        <button class="quiz-opt" onclick="checkQuiz(3, 0)">A) Math operations automatically check for overflow/underflow and REVERT the transaction on error</button>
-                        <button class="quiz-opt" onclick="checkQuiz(3, 1)">B) It replaces all integers with floating point decimals</button>
-                        <button class="quiz-opt" onclick="checkQuiz(3, 2)">C) It limits all user balances to 100 tokens maximum</button>
-                        <button class="quiz-opt" onclick="checkQuiz(3, 3)">D) It requires miners to approve every math subtraction manually</button>
+                        <button class="quiz-opt" onclick="answerQuiz(3, 0)">A) A central bank server checks the user's credit card</button>
+                        <button class="quiz-opt" onclick="answerQuiz(3, 1)">B) Distributed consensus validates input UTXOs and confirms only one valid transaction history in blocks</button>
+                        <button class="quiz-opt" onclick="answerQuiz(3, 2)">C) Coins disappear from digital existence after 5 minutes</button>
+                        <button class="quiz-opt" onclick="answerQuiz(3, 3)">D) Cryptocurrencies do not prevent double spending</button>
                     </div>
-                    <div class="quiz-feedback hidden" id="quizFeedback3"></div>
+                    <div class="quiz-feedback hidden" id="qFeedback3"></div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="quiz-card" id="quizCard4">
+                    <span class="q-tag">QUESTION 4 • THE DAO REENTRANCY</span>
+                    <h3>What is the Checks-Effects-Interactions (CEI) pattern?</h3>
+                    <div class="quiz-options">
+                        <button class="quiz-opt" onclick="answerQuiz(4, 0)">A) Send Ether first, check balance second, log events third</button>
+                        <button class="quiz-opt" onclick="answerQuiz(4, 1)">B) Validate conditions first, mutate internal storage second, perform external calls last</button>
+                        <button class="quiz-opt" onclick="answerQuiz(4, 2)">C) Never allow users to withdraw their deposited funds</button>
+                        <button class="quiz-opt" onclick="answerQuiz(4, 3)">D) An external firewall installed on mining computers</button>
+                    </div>
+                    <div class="quiz-feedback hidden" id="qFeedback4"></div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="quiz-card" id="quizCard5">
+                    <span class="q-tag">QUESTION 5 • RONIN BRIDGE</span>
+                    <h3>Why did the Ronin Bridge smart contract accept the $625M fraudulent withdrawal?</h3>
+                    <div class="quiz-options">
+                        <button class="quiz-opt" onclick="answerQuiz(5, 0)">A) A math overflow wrapped the balance around</button>
+                        <button class="quiz-opt" onclick="answerQuiz(5, 1)">B) The smart contract logic failed to compile on Ethereum</button>
+                        <button class="quiz-opt" onclick="answerQuiz(5, 2)">C) The transaction possessed 5 authentic ECDSA signatures satisfying the contract's 5/9 quorum rule</button>
+                        <button class="quiz-opt" onclick="answerQuiz(5, 3)">D) Ethereum was offline for 6 hours</button>
+                    </div>
+                    <div class="quiz-feedback hidden" id="qFeedback5"></div>
+                </div>
+
+                <!-- Q6 -->
+                <div class="quiz-card" id="quizCard6">
+                    <span class="q-tag">QUESTION 6 • SMART CONTRACT SECURITY</span>
+                    <h3>How does Solidity 0.8+ solve the "Odometer" Integer Underflow bug?</h3>
+                    <div class="quiz-options">
+                        <button class="quiz-opt" onclick="answerQuiz(6, 0)">A) Built-in checked arithmetic detects underflow and automatically REVERTS the transaction with Panic(0x11)</button>
+                        <button class="quiz-opt" onclick="answerQuiz(6, 1)">B) It replaces all integers with floating point decimals</button>
+                        <button class="quiz-opt" onclick="answerQuiz(6, 2)">C) It limits all user balances to 100 tokens maximum</button>
+                        <button class="quiz-opt" onclick="answerQuiz(6, 3)">D) It requires miners to approve every math subtraction manually</button>
+                    </div>
+                    <div class="quiz-feedback hidden" id="qFeedback6"></div>
                 </div>
             </div>
+
+            <div class="action-btn-row centered" style="margin-top: 25px;">
+                <button class="primary-btn" onclick="resetAllQuizzes()">🔄 Reset Quiz</button>
+            </div>
+
         </section>
 
     </main>
 
-    <!-- Footer -->
+    <!-- Concluding Educational Banner & Footer -->
     <footer class="footer">
-        <p>Built for College Presentations & Blockchain Security Education • Designed with HTML5, CSS3 & Vanilla JavaScript</p>
+        <div class="footer-quote">
+            <span class="quote-icon">🛡️</span>
+            <h3>“Blockchain is not ‘unhackable.’ Security depends on: Protocol + Consensus + Smart Contracts + Keys + Validators + Infrastructure + Monitoring. Every layer matters.”</h3>
+        </div>
+        <p class="footer-credits">
+            Built for College Presentations & Blockchain Security Education (BCT TAE-2) • 100% Offline Vanilla HTML5, CSS3 & JavaScript
+        </p>
     </footer>
 
-    <!-- Simulation Logic -->
+    <!-- Interactive Simulation State Machines & Logic -->
     <script src="script.js"></script>
 </body>
 </html>
