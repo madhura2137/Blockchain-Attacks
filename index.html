@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Security Lab — Interactive Attack & Defense Simulations</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Floating Coin Container for Animations -->
+    <div id="coinParticleContainer" class="coin-particles"></div>
+
+    <!-- Top Navigation Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo-badge">
+                <span class="pulse-dot"></span>
+                <span class="logo-icon">🛡️</span>
+            </div>
+            <div>
+                <h1>BLOCKCHAIN SECURITY LAB</h1>
+                <p class="subtitle">Interactive Visual Exploit & Defense Demonstrator for Classroom Presentations</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <button id="soundToggleBtn" class="pill-btn" onclick="toggleSound()" title="Toggle Sound FX">
+                🔊 Sound: <span id="soundStatusText">ON</span>
+            </button>
+            <button id="speakerNotesBtn" class="pill-btn highlight" onclick="toggleSpeakerNotes()" title="Open Presentation Script">
+                🎙️ Presenter Script
+            </button>
+        </div>
+    </header>
+
+    <!-- Presenter Script Drawer (Collapsible) -->
+    <section id="speakerNotesDrawer" class="speaker-drawer hidden">
+        <div class="speaker-drawer-header">
+            <h3>🎙️ Presenter's Cheat Sheet — What to Say to Your Professor & Class</h3>
+            <button class="close-btn" onclick="toggleSpeakerNotes()">✕</button>
+        </div>
+        <div class="speaker-content">
+            <div id="speakerNoteDAO" class="speaker-note-tab">
+                <p><strong>Everyday Analogy:</strong> "Imagine an ATM that gives you the cash <em>before</em> deducting it from your bank card. If you press 'Withdraw' again while the cash dispenser is open, you can keep taking cash until the machine is empty!"</p>
+                <p><strong>Demonstrating Normal Withdrawal:</strong> "Click 'Normal Withdrawal'. The contract checks the balance, sends 10 ETH, and updates balance to 0. This is how it should work."</p>
+                <p><strong>Demonstrating the Attack:</strong> "Switch to Vulnerable Mode. The contract sends the ETH <em>before</em> updating the balance. When the attacker's fallback function receives the ETH, it recursively calls <code>withdraw()</code> again and again!"</p>
+                <p><strong>The Fix:</strong> "Switch to Patched Mode. Using the Checks-Effects-Interactions (CEI) pattern, the balance is set to 0 <em>first</em>. When the attacker re-enters, the check fails with <code>require(bal > 0)</code> and the exploit is completely blocked!"</p>
+            </div>
+            <div id="speakerNoteRonin" class="speaker-note-tab hidden">
+                <p><strong>Everyday Analogy:</strong> "Imagine a bank vault with 9 locks. Any 5 keys together will open the door. But 4 of the keys were stored in the manager's office desk, and the 5th key was in a shared drawer. One phishing email got the hacker all 5 keys!"</p>
+                <p><strong>The Attack Vector:</strong> "In March 2022, hackers stole $625 Million from the Ronin Bridge. They used a fake LinkedIn job offer PDF to infect an engineer's laptop, stealing 4 keys, then abused an active RPC whitelist to sign with the 5th key."</p>
+                <p><strong>The Defense:</strong> "Modern bridges use 11-of-15 multi-party thresholds across decentralized companies, combined with 48-hour timelocks on large transactions so malicious withdrawals can be frozen before money leaves."</p>
+            </div>
+            <div id="speakerNoteBugs" class="speaker-note-tab hidden">
+                <p><strong>Bug 1 (Integer Underflow):</strong> "Imagine an old car odometer at 000 miles. If you roll it backwards 1 mile, it wraps around to 999,999 miles! In Solidity before version 0.8, subtracting 1 from 0 rolled over to $2^{256}-1$—giving the attacker billions of free tokens!"</p>
+                <p><strong>Bug 2 (Missing Access Control):</strong> "Imagine a bank vault door with a sign saying 'Managers Only', but the builder forgot to install a lock! Anyone can walk in, click 'Claim Ownership', and empty the vault. Adding the <code>onlyOwner</code> modifier fixes it."</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lab Tab Navigation Bar -->
+    <nav class="lab-nav">
+        <button class="nav-tab active" data-tab="dao" onclick="switchLabTab('dao')">
+            <span class="tab-badge red">DEMO 1</span>
+            <span class="tab-title">🔴 The DAO Reentrancy</span>
+            <span class="tab-desc">The Glitched ATM (Call Stack Exploit)</span>
+        </button>
+        <button class="nav-tab" data-tab="ronin" onclick="switchLabTab('ronin')">
+            <span class="tab-badge orange">DEMO 2</span>
+            <span class="tab-title">🌉 Ronin Bridge Hack</span>
+            <span class="tab-desc">The 9-Lock Door (5/9 Multi-Sig Compromise)</span>
+        </button>
+        <button class="nav-tab" data-tab="bugs" onclick="switchLabTab('bugs')">
+            <span class="tab-badge purple">DEMO 3</span>
+            <span class="tab-title">🐛 Smart Contract Bugs</span>
+            <span class="tab-desc">Underflow Odometer & Unlocked Admin Doors</span>
+        </button>
+        <button class="nav-tab" data-tab="quiz" onclick="switchLabTab('quiz')">
+            <span class="tab-badge green">QUIZ</span>
+            <span class="tab-title">🎓 Classroom Quiz</span>
+            <span class="tab-desc">Test Audience Understanding</span>
+        </button>
+    </nav>
+
+    <!-- MAIN LAB WORKSPACE -->
+    <main class="lab-workspace">
+
+        <!-- ==================================================== -->
+        <!-- TAB 1: THE DAO REENTRANCY ATTACK SIMULATION         -->
+        <!-- ==================================================== -->
+        <section id="tab-dao" class="tab-panel active">
+            
+            <!-- ELI5 Everyday Metaphor Banner -->
+            <div class="eli5-banner">
+                <div class="eli5-icon">🏧</div>
+                <div class="eli5-content">
+                    <span class="eli5-tag">EXPLAIN LIKE I'M 5 (EVERYDAY ANALOGY)</span>
+                    <h3>The Broken ATM Machine</h3>
+                    <p>Imagine inserting your bank card into an ATM. The ATM pushes out $100 cash <em>first</em>. But before it updates your account balance, you hit "Withdraw Again" immediately! The machine checks your old balance, sees you still have money, and hands you another $100. It keeps repeating until the ATM vault is totally empty.</p>
+                </div>
+            </div>
+
+            <div class="panel-header">
+                <div class="panel-info">
+                    <h2>🔴 The DAO Reentrancy Attack (2016)</h2>
+                    <p>Smart Contract Call-Stack Interception & State Update Flaw ($60M Historic Drain)</p>
+                </div>
+                
+                <!-- Vulnerable vs Prevention Toggle -->
+                <div class="mode-toggle-card">
+                    <span class="mode-label">Contract Logic Mode:</span>
+                    <div class="segmented-control">
+                        <button id="daoModeVuln" class="segment-btn active danger" onclick="setDaoMode('vulnerable')">
+                            ⚠️ Vulnerable Code
+                        </button>
+                        <button id="daoModePatched" class="segment-btn safe" onclick="setDaoMode('patched')">
+                            🛡️ Patched (Checks-Effects-Interactions)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard State Cards -->
+            <div class="dashboard">
+                <div class="box vault-box" id="daoVaultCard">
+                    <div class="box-tag">TARGET VAULT</div>
+                    <h2>🏦 DAO Contract</h2>
+                    <div class="balance-display">
+                        <span class="label">Vault Reserve</span>
+                        <h1 id="contractFunds" class="funds-val">30 ETH</h1>
+                    </div>
+                    <div class="vault-progress-bar">
+                        <div id="daoVaultBar" class="vault-fill" style="width: 100%;"></div>
+                    </div>
+                    <p class="box-caption" id="daoVaultStatus">Status: Healthy Liquidity</p>
+                </div>
+
+                <div class="box attacker-box" id="daoAttackerCard">
+                    <div class="box-tag attack">EXPLOITER CONTRACT</div>
+                    <h2>👤 Attacker</h2>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <span class="label">Recorded Balance</span>
+                            <h1 id="attackerBalance">10 ETH</h1>
+                        </div>
+                        <div class="stat-item highlight">
+                            <span class="label">ETH Stolen / Received</span>
+                            <h1 id="attackerReceived">0 ETH</h1>
+                        </div>
+                    </div>
+                    <div class="reentrancy-depth">
+                        <span>Recursion Depth:</span>
+                        <span id="reentrancyDepthBadge" class="badge-depth">Depth: 0 (Idle)</span>
+                    </div>
+                </div>
+
+                <!-- Call Stack Visualizer -->
+                <div class="box stack-box">
+                    <div class="box-tag">EVM CALL STACK</div>
+                    <h2>📚 Execution Stack</h2>
+                    <div id="callStackList" class="stack-container">
+                        <div class="stack-frame empty-frame">Stack is idle. Click a button to begin execution.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flow Visual Diagram -->
+            <div class="flow-container">
+                <div class="flow-header">
+                    <span>Transaction Execution Pipeline</span>
+                    <span id="flowModeBadge" class="flow-badge vuln">Mode: Vulnerable (Send before State Update)</span>
+                </div>
+                <div class="flow" id="daoFlowGraph">
+                    <div class="node" id="nodeAttacker">
+                        <span class="node-icon">👤</span>
+                        <span class="node-title">Attacker Contract</span>
+                        <span class="node-sub">msg.sender</span>
+                    </div>
+                    <div class="arrow" id="arrow1">➔<span class="arrow-label">withdraw()</span></div>
+                    
+                    <div class="node" id="nodeCheck">
+                        <span class="node-icon">🔍</span>
+                        <span class="node-title">1. Check Balance</span>
+                        <span class="node-sub">require(bal &gt; 0)</span>
+                    </div>
+                    <div class="arrow" id="arrow2">➔</div>
+
+                    <div class="node" id="nodeAction1">
+                        <span class="node-icon" id="action1Icon">💰</span>
+                        <span class="node-title" id="action1Title">2. Send ETH</span>
+                        <span class="node-sub" id="action1Sub">msg.sender.call{value}</span>
+                    </div>
+                    <div class="arrow" id="arrow3">➔</div>
+
+                    <div class="node" id="nodeAction2">
+                        <span class="node-icon" id="action2Icon">📝</span>
+                        <span class="node-title" id="action2Title">3. Update Balance</span>
+                        <span class="node-sub" id="action2Sub">balances[sender] = 0</span>
+                    </div>
+
+                    <div class="arrow reenter-arrow" id="arrowReenter">
+                        <div class="reenter-loop">
+                            <span class="reenter-text">⚠️ Recursive fallback() Re-enters withdraw()</span>
+                            <span class="reenter-icon">↺</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Buttons -->
+            <div class="control-panel">
+                <button class="btn btn-primary" id="btnNormalWithdraw" onclick="normalWithdrawal()">
+                    <span>👤</span> Normal Withdrawal
+                </button>
+                <button class="btn btn-danger" id="btnAttackStep" onclick="attackStep()">
+                    <span>⚔️</span> Next Attack Step
+                </button>
+                <button class="btn btn-secondary" id="btnAutoAttack" onclick="toggleAutoDaoAttack()">
+                    <span id="autoDaoIcon">▶️</span> <span id="autoDaoText">Auto-Play Attack</span>
+                </button>
+                <button class="btn btn-reset" onclick="resetDemo()">
+                    <span>🔄</span> Reset Demo
+                </button>
+            </div>
+
+            <!-- Live Status & Explanation Cards -->
+            <div class="terminal-logs">
+                <div class="terminal-header">
+                    <span class="terminal-dot red"></span>
+                    <span class="terminal-dot yellow"></span>
+                    <span class="terminal-dot green"></span>
+                    <span class="terminal-title">Simulation Event Console</span>
+                </div>
+                <div id="message" class="message terminal-body">
+                    Ready to start the demonstration. Choose Normal Withdrawal or click Next Attack Step.
+                </div>
+            </div>
+
+            <div class="explanation-grid">
+                <div class="explanation">
+                    <h3>💡 Why Does the Attack Work?</h3>
+                    <p id="explanationText">
+                        The vulnerable contract sends ETH to the caller <strong>before</strong> updating the caller's recorded balance to 0. 
+                        When the attacker's fallback function receives the ETH, it intercepts control flow and calls <code>withdraw()</code> again.
+                    </p>
+                </div>
+                <div class="code-compare-card">
+                    <div class="code-header">
+                        <span class="code-title">Solidity Implementation Comparison</span>
+                        <span id="codeModeLabel" class="code-badge danger">VULNERABLE PATTERN</span>
+                    </div>
+                    <pre class="code-box" id="daoSolidityCode"><code>// ❌ VULNERABLE: Send ETH before balance update!
+function withdraw() public {
+    uint256 bal = balances[msg.sender];
+    require(bal > 0);
+    
+    // BUG HERE: External call hands control to attacker
+    (bool sent, ) = msg.sender.call{value: bal}(""); 
+    require(sent, "Failed to send ETH");
+    
+    // Too late! This line is never reached before reentrancy!
+    balances[msg.sender] = 0;
+}</code></pre>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================== -->
+        <!-- TAB 2: RONIN BRIDGE VALIDATOR MULTI-SIG HACK        -->
+        <!-- ==================================================== -->
+        <section id="tab-ronin" class="tab-panel hidden">
+            
+            <!-- ELI5 Everyday Metaphor Banner -->
+            <div class="eli5-banner">
+                <div class="eli5-icon">🔐</div>
+                <div class="eli5-content">
+                    <span class="eli5-tag">EXPLAIN LIKE I'M 5 (EVERYDAY ANALOGY)</span>
+                    <h3>The 9-Lock Vault with Keys on One Desk</h3>
+                    <p>Imagine a giant high-security bank vault with 9 different keyholes. To open the door, any 5 keys must be turned at the same time. You'd think that's super secure! But the bank kept 4 of the keys in the branch manager's unlocked desk drawer, and the 5th key was in a shared office cabinet. One fake email gave the hacker access to that room—allowing them to steal all 5 keys and unlock $625 Million!</p>
+                </div>
+            </div>
+
+            <div class="panel-header">
+                <div class="panel-info">
+                    <h2>🌉 Ronin Bridge Multi-Sig Compromise ($625M)</h2>
+                    <p>Demonstrates how social engineering compromised 5 of 9 cryptographic validator private keys to open the vault door.</p>
+                </div>
+
+                <div class="mode-toggle-card">
+                    <span class="mode-label">Bridge Security Model:</span>
+                    <div class="segmented-control">
+                        <button id="roninModeVuln" class="segment-btn active danger" onclick="setRoninMode('vulnerable')">
+                            ⚠️ Historical (5-of-9 Centralized)
+                        </button>
+                        <button id="roninModePatched" class="segment-btn safe" onclick="setRoninMode('patched')">
+                            🛡️ Secured (11-of-15 + Timelock)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bridge Dashboard -->
+            <div class="dashboard">
+                <div class="box vault-box" id="roninVaultCard">
+                    <div class="box-tag">ETHEREUM BRIDGE VAULT</div>
+                    <h2>🏛️ Custody Vault</h2>
+                    <div class="balance-display">
+                        <span class="label">Locked Liquidity</span>
+                        <h1 id="roninVaultBalance">$625,000,000</h1>
+                        <p class="asset-sub">173,600 ETH + 25.5M USDC</p>
+                    </div>
+                    <div class="vault-progress-bar">
+                        <div id="roninVaultBar" class="vault-fill" style="width: 100%;"></div>
+                    </div>
+                    <p class="box-caption" id="roninVaultStatus">Status: All Bridge Reserves Intact</p>
+                </div>
+
+                <!-- Animated Interactive Vault Door Visual -->
+                <div class="box vault-door-box">
+                    <div class="box-tag">MULTI-SIG DOOR MECHANISM</div>
+                    <h2>🚪 Vault Door Lock State</h2>
+                    <div class="vault-door-graphic" id="roninVaultDoor">
+                        <div class="door-lock-icon" id="roninDoorIcon">🔒</div>
+                        <div class="door-status-text" id="roninDoorStatusText">LOCKED & SECURED</div>
+                    </div>
+                    <div class="threshold-display">
+                        <span id="roninSignatureCount" class="sig-huge">0 / 5</span>
+                        <span id="roninThresholdLabel" class="sig-label">Keys Turned to Open Vault</span>
+                    </div>
+                    <div class="sig-progress-bar">
+                        <div id="roninSigBar" class="sig-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="box attacker-box" id="roninAttackerCard">
+                    <div class="box-tag attack">LAZARUS HACKER WALLET</div>
+                    <h2>👤 Exploiter Address</h2>
+                    <div class="balance-display">
+                        <span class="label">Stolen Bridge Funds</span>
+                        <h1 id="roninAttackerLoot">$0 USD</h1>
+                        <p class="asset-sub" id="roninAttackerSub">0 ETH / 0 USDC</p>
+                    </div>
+                    <div class="status-indicator">
+                        <span class="status-pill safe" id="roninHackerState">Idle / Scouting</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Validator Keyholes Cluster -->
+            <div class="validator-map-card">
+                <div class="validator-map-header">
+                    <h3>🗝️ The 9 Validator Keys (Turn 5 to Open)</h3>
+                    <span class="map-badge" id="validatorSummaryBadge">9 Total Keys (4 Sky Mavis, 1 Axie DAO, 4 External)</span>
+                </div>
+                
+                <div class="validators-grid" id="validatorsGrid">
+                    <!-- Validator nodes generated by JS -->
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="control-panel">
+                <button class="btn btn-danger" id="btnRoninStep" onclick="nextRoninStep()">
+                    <span>🎯</span> Next Attack Step (<span id="roninStepIndicator">Step 1 of 5</span>)
+                </button>
+                <button class="btn btn-secondary" id="btnRoninAuto" onclick="toggleAutoRonin()">
+                    <span id="autoRoninIcon">▶️</span> <span id="autoRoninText">Auto-Play Attack</span>
+                </button>
+                <button class="btn btn-reset" onclick="resetRoninDemo()">
+                    <span>🔄</span> Reset Ronin Demo
+                </button>
+            </div>
+
+            <!-- Event Console -->
+            <div class="terminal-logs">
+                <div class="terminal-header">
+                    <span class="terminal-dot red"></span>
+                    <span class="terminal-dot yellow"></span>
+                    <span class="terminal-dot green"></span>
+                    <span class="terminal-title">Ronin Bridge Security Log</span>
+                </div>
+                <div id="roninConsole" class="message terminal-body">
+                    Bridge is operating normally. Ready to simulate the validator compromise attack.
+                </div>
+            </div>
+
+            <!-- Educational Card -->
+            <div class="explanation-grid">
+                <div class="explanation">
+                    <h3>💡 Anatomy of the $625M Ronin Heist</h3>
+                    <p id="roninExplain">
+                        The Ronin bridge did not have a smart contract math bug. Instead, the vulnerability was <strong>centralized validator key governance</strong>. 
+                        Because 4 validators were held by the same company (Sky Mavis) and a 5th was accessible via a forgotten RPC whitelist, compromising one employee gave the attacker 5 of 9 keys—enough to sign arbitrary withdrawals.
+                    </p>
+                </div>
+                <div class="defense-card">
+                    <h3>🛡️ How Bridges Are Secured Today</h3>
+                    <ul class="defense-list">
+                        <li><strong>Higher Quorum:</strong> Require 11-of-15 or 16-of-21 across diverse independent entities.</li>
+                        <li><strong>Withdrawal Timelocks:</strong> Any withdrawal over $100k undergoes a 48-hour delay for human and automated review.</li>
+                        <li><strong>Circuit Breakers:</strong> Automated rate-limiting contracts that halt transfers if sudden spikes occur.</li>
+                        <li><strong>Multi-Party Computation (MPC):</strong> Private keys are split into secret shares and kept in Hardware Security Modules (HSMs).</li>
+                    </ul>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================== -->
+        <!-- TAB 3: SMART CONTRACT BUGS (UNDERFLOW & ACCESS)     -->
+        <!-- ==================================================== -->
+        <section id="tab-bugs" class="tab-panel hidden">
+            
+            <!-- ELI5 Everyday Metaphor Banner -->
+            <div class="eli5-banner">
+                <div class="eli5-icon">🚗</div>
+                <div class="eli5-content">
+                    <span class="eli5-tag">EXPLAIN LIKE I'M 5 (EVERYDAY ANALOGY)</span>
+                    <h3>The Rolling Odometer & The Door With No Lock</h3>
+                    <p><strong>Bug 1 (Odometer Rollback):</strong> When an old mechanical car odometer is at <code>0000</code> miles and you roll the wheels backward 1 mile, what happens? It wraps all the way around to <code>9999</code> miles! In computer code without safety checks, subtracting 1 from 0 creates the largest number in the universe.<br>
+                    <strong>Bug 2 (The Unlocked Door):</strong> A bank vault has a switch labeled "Change Manager". Anyone who walks into the building can flip it to make themselves the manager, then take all the money because the developer forgot to put a lock on the switch!</p>
+                </div>
+            </div>
+
+            <div class="panel-header">
+                <div class="panel-info">
+                    <h2>🐛 Smart Contract Bugs</h2>
+                    <p>Explore the two most common logic flaws in smart contracts: Integer Underflows and Broken Access Control.</p>
+                </div>
+
+                <!-- Sub-bug Switcher -->
+                <div class="sub-bug-switcher">
+                    <button id="btnSubBugUnderflow" class="sub-bug-btn active" onclick="switchSubBug('underflow')">
+                        <span>🔢 Bug A: Integer Underflow (Odometer)</span>
+                    </button>
+                    <button id="btnSubBugAccess" class="sub-bug-btn" onclick="switchSubBug('access')">
+                        <span>👑 Bug B: Missing Access Control (onlyOwner)</span>
+                    </button>
+                </div>
+
+                <!-- Vulnerable vs Patched Toggle -->
+                <div class="mode-toggle-card">
+                    <span class="mode-label">Bug Defense Mode:</span>
+                    <div class="segmented-control">
+                        <button id="bugModeVuln" class="segment-btn active danger" onclick="setBugMode('vulnerable')">
+                            ⚠️ Vulnerable Code
+                        </button>
+                        <button id="bugModePatched" class="segment-btn safe" onclick="setBugMode('patched')">
+                            🛡️ Patched (SafeMath / onlyOwner)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- SUB-BUG 1: INTEGER UNDERFLOW VIEW -->
+            <div id="subBugUnderflowView" class="sub-bug-view">
+                <div class="dashboard">
+                    <div class="box">
+                        <div class="box-tag">TOKEN CONTRACT VAULT</div>
+                        <h2>🏦 Treasury Bank</h2>
+                        <div class="balance-display">
+                            <span class="label">Total Token Supply</span>
+                            <h1 class="funds-val">1,000,000 TOKENS</h1>
+                            <p class="asset-sub">Backed by $1,000,000 Real Cash Reserve</p>
+                        </div>
+                        <p class="box-caption">Solidity uint256 Balance Storage</p>
+                    </div>
+
+                    <!-- Mechanical Odometer Widget -->
+                    <div class="box odometer-card" id="odometerCard">
+                        <div class="box-tag attack">ATTACKER WALLET BALANCE</div>
+                        <h2>👤 Attacker's Odometer</h2>
+                        
+                        <div class="odometer-container">
+                            <div class="odometer-label">Current Stored uint256 Value:</div>
+                            <div class="odometer-reels" id="odometerReels">
+                                <div class="reel"><span class="reel-val" id="reel1">0</span></div>
+                                <div class="reel"><span class="reel-val" id="reel2">0</span></div>
+                                <div class="reel"><span class="reel-val" id="reel3">0</span></div>
+                                <div class="reel dots">...</div>
+                                <div class="reel"><span class="reel-val" id="reelEnd">0</span></div>
+                            </div>
+                            <div class="odometer-number-label" id="odometerFullText">0 Tokens</div>
+                        </div>
+
+                        <div class="status-indicator">
+                            <span id="odometerStatus" class="status-pill safe">Balance Normal: 0 Tokens</span>
+                        </div>
+                    </div>
+
+                    <div class="box">
+                        <div class="box-tag">ARITHMETIC OPERATION</div>
+                        <h2>🧮 The Fatal Equation</h2>
+                        <div class="math-box">
+                            <div class="math-line"><span class="math-var">Initial Balance:</span> <span class="math-val">0</span></div>
+                            <div class="math-line"><span class="math-var">Amount Transferred:</span> <span class="math-val">- 1</span></div>
+                            <div class="math-divider"></div>
+                            <div class="math-line result"><span class="math-var">Result:</span> <span class="math-val" id="mathResultText">0</span></div>
+                        </div>
+                        <p class="box-caption" id="mathCaption">In unsigned math, numbers cannot be negative.</p>
+                    </div>
+                </div>
+
+                <!-- Controls for Underflow -->
+                <div class="control-panel">
+                    <button class="btn btn-danger" id="btnTriggerUnderflow" onclick="triggerUnderflowExploit()">
+                        <span>💥</span> Attacker Calls transfer(victim, 1) with 0 Balance
+                    </button>
+                    <button class="btn btn-reset" onclick="resetUnderflowDemo()">
+                        <span>🔄</span> Reset Odometer
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- SUB-BUG 2: MISSING ACCESS CONTROL VIEW -->
+            <div id="subBugAccessView" class="sub-bug-view hidden">
+                <div class="dashboard">
+                    <div class="box vault-box">
+                        <div class="box-tag">PROTECTED TREASURY</div>
+                        <h2>🏛️ Community Vault</h2>
+                        <div class="balance-display">
+                            <span class="label">Vault Locked Funds</span>
+                            <h1 class="funds-val" id="accessVaultBalance">$10,000,000</h1>
+                            <p class="asset-sub">Only "Owner" Should Be Allowed to Withdraw!</p>
+                        </div>
+                        <div class="vault-progress-bar">
+                            <div id="accessVaultBar" class="vault-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="box owner-card" id="accessOwnerCard">
+                        <div class="box-tag">CONTRACT PERMISSION STATE</div>
+                        <h2>👑 Contract Owner</h2>
+                        
+                        <div class="owner-badge-display">
+                            <div class="crown-icon" id="ownerCrown">👑</div>
+                            <div class="owner-address" id="ownerAddressText">0xAdmin_Creator (Deployer)</div>
+                            <div class="owner-desc" id="ownerDescText">Authorized Administrator</div>
+                        </div>
+                        
+                        <div class="status-indicator">
+                            <span class="status-pill safe" id="accessOwnerStatus">Legitimate Owner In Control</span>
+                        </div>
+                    </div>
+
+                    <div class="box attacker-box">
+                        <div class="box-tag attack">EXPLOITER WALLET</div>
+                        <h2>👤 Unauthorized Attacker</h2>
+                        <div class="balance-display">
+                            <span class="label">Attacker Stolen Funds</span>
+                            <h1 id="accessAttackerLoot">$0</h1>
+                            <p class="asset-sub" id="accessAttackerAddr">Address: 0xHacker_Anonymous</p>
+                        </div>
+                        <div class="status-indicator">
+                            <span class="status-pill safe" id="accessAttackerStatus">Regular Guest (Zero Privileges)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls for Access Control -->
+                <div class="control-panel">
+                    <button class="btn btn-danger" id="btnClaimOwnership" onclick="triggerClaimOwnership()">
+                        <span>👑</span> Step 1: Call changeOwner(0xHacker)
+                    </button>
+                    <button class="btn btn-primary" id="btnDrainAccessVault" onclick="triggerDrainAccessVault()" disabled>
+                        <span>💸</span> Step 2: Call emergencyWithdrawAll()
+                    </button>
+                    <button class="btn btn-reset" onclick="resetAccessDemo()">
+                        <span>🔄</span> Reset Access Control
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Terminal Log for Bugs -->
+            <div class="terminal-logs">
+                <div class="terminal-header">
+                    <span class="terminal-dot red"></span>
+                    <span class="terminal-dot yellow"></span>
+                    <span class="terminal-dot green"></span>
+                    <span class="terminal-title">Smart Contract Bug Analysis Console</span>
+                </div>
+                <div id="bugConsole" class="message terminal-body">
+                    Smart contract inspector initialized. Select an attack to observe the exploit and defense.
+                </div>
+            </div>
+
+            <!-- Code Comparison for Bugs -->
+            <div class="explanation-grid">
+                <div class="explanation">
+                    <h3 id="bugExplainTitle">💡 Why Does the Underflow Bug Happen?</h3>
+                    <p id="bugExplainText">
+                        In programming, an unsigned 256-bit integer (<code>uint256</code>) cannot represent negative numbers. It can only store values between <code>0</code> and $2^{256}-1$. 
+                        When you subtract <code>1</code> from <code>0</code> without safety checks, the computer wraps backward to the maximum possible number—giving the attacker an astronomical fortune!
+                    </p>
+                </div>
+                <div class="code-compare-card">
+                    <div class="code-header">
+                        <span class="code-title" id="bugCodeTitle">Solidity Code Comparison</span>
+                        <span id="bugCodeBadge" class="code-badge danger">VULNERABLE (NO SAFEMATH)</span>
+                    </div>
+                    <pre class="code-box" id="bugSolidityCode"><code>// ❌ VULNERABLE: Pre-Solidity 0.8 unchecked subtraction!
+function transfer(address to, uint256 amount) public {
+    // BUG: If balances[msg.sender] is 0, (0 - 1) wraps to 2^256 - 1!
+    balances[msg.sender] -= amount; 
+    balances[to] += amount;
+}</code></pre>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================== -->
+        <!-- TAB 4: CLASSROOM QUIZ & DEFENSE PLAYGROUND          -->
+        <!-- ==================================================== -->
+        <section id="tab-quiz" class="tab-panel hidden">
+            
+            <!-- ELI5 Everyday Metaphor Banner -->
+            <div class="eli5-banner">
+                <div class="eli5-icon">🎓</div>
+                <div class="eli5-content">
+                    <span class="eli5-tag">CLASSROOM ENGAGEMENT</span>
+                    <h3>Test Your Classmates' Knowledge!</h3>
+                    <p>Use these interactive questions during your presentation to engage your professor and classmates. Click an answer to see instant feedback and clear explanations.</p>
+                </div>
+            </div>
+
+            <div class="panel-header">
+                <div class="panel-info">
+                    <h2>🎓 Classroom Defense Quiz</h2>
+                    <p>Instant evaluation for students on Reentrancy, Multi-Sig governance, and Smart Contract Bugs.</p>
+                </div>
+            </div>
+
+            <div class="quiz-container">
+                <div class="quiz-card" id="quizCard1">
+                    <div class="quiz-header">
+                        <span class="quiz-badge">Question 1 of 3</span>
+                        <h3>How does the "Checks-Effects-Interactions" pattern stop the DAO Reentrancy exploit?</h3>
+                    </div>
+                    <div class="quiz-options">
+                        <button class="quiz-opt" onclick="checkQuiz(1, 0)">A) It encrypts the user's transaction with RSA-2048</button>
+                        <button class="quiz-opt" onclick="checkQuiz(1, 1)">B) It changes the user's recorded balance to 0 BEFORE sending the ETH</button>
+                        <button class="quiz-opt" onclick="checkQuiz(1, 2)">C) It bans smart contracts from sending cryptocurrency</button>
+                        <button class="quiz-opt" onclick="checkQuiz(1, 3)">D) It requires waiting 24 hours for proof-of-work confirmation</button>
+                    </div>
+                    <div class="quiz-feedback hidden" id="quizFeedback1"></div>
+                </div>
+
+                <div class="quiz-card" id="quizCard2">
+                    <div class="quiz-header">
+                        <span class="quiz-badge">Question 2 of 3</span>
+                        <h3>What was the real root cause of the $625M Ronin Bridge hack?</h3>
+                    </div>
+                    <div class="quiz-options">
+                        <button class="quiz-opt" onclick="checkQuiz(2, 0)">A) A mathematical overflow in the Solidity bridge contract</button>
+                        <button class="quiz-opt" onclick="checkQuiz(2, 1)">B) A 51% mining attack on the Ethereum network</button>
+                        <button class="quiz-opt" onclick="checkQuiz(2, 2)">C) Phishing and poor key storage allowing the compromise of 5 out of 9 validator private keys</button>
+                        <button class="quiz-opt" onclick="checkQuiz(2, 3)">D) The price of Axie Infinity falling to zero</button>
+                    </div>
+                    <div class="quiz-feedback hidden" id="quizFeedback2"></div>
+                </div>
+
+                <div class="quiz-card" id="quizCard3">
+                    <div class="quiz-header">
+                        <span class="quiz-badge">Question 3 of 3</span>
+                        <h3>How does Solidity 0.8+ solve the "Odometer" Integer Underflow bug?</h3>
+                    </div>
+                    <div class="quiz-options">
+                        <button class="quiz-opt" onclick="checkQuiz(3, 0)">A) Math operations automatically check for overflow/underflow and REVERT the transaction on error</button>
+                        <button class="quiz-opt" onclick="checkQuiz(3, 1)">B) It replaces all integers with floating point decimals</button>
+                        <button class="quiz-opt" onclick="checkQuiz(3, 2)">C) It limits all user balances to 100 tokens maximum</button>
+                        <button class="quiz-opt" onclick="checkQuiz(3, 3)">D) It requires miners to approve every math subtraction manually</button>
+                    </div>
+                    <div class="quiz-feedback hidden" id="quizFeedback3"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Built for College Presentations & Blockchain Security Education • Designed with HTML5, CSS3 & Vanilla JavaScript</p>
+    </footer>
+
+    <!-- Simulation Logic -->
+    <script src="script.js"></script>
+</body>
+</html>
